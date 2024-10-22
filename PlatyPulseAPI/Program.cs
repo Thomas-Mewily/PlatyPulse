@@ -1,29 +1,88 @@
-﻿using System.Diagnostics.Metrics;
+﻿global using ChallengeID   = System.Guid;
+global using ObjectifID    = System.Guid;
+global using UserID        = System.Guid;
+global using ChallengeEntryID = System.Guid;
+global using ObjectifEntryID  = System.Guid;
+
+using System.Diagnostics.Metrics;
 
 namespace PlatyPulseAPI;
 
-public record ChallengesID { int id; }
-
-public class Challenges
+public class AppContext
 {
-    DateTime Begin { get; }
-    TimeSpan Duration { get; }
+    public Application App => Application.Instance;
+    public DateTime    CurrentTime => App.CurrentTime;
+}
+
+public class Application : AppContext
+{
+    public static Application Instance { get; private set; } = new Application();
+    public new DateTime CurrentTime;
+}
+
+
+
+public enum ChallengePeriod 
+{
+    Past,
+    Active,
+    Futur,
+}
+
+public class Challenge : AppContext
+{
+    /// ================= Fields =========
+    public ChallengeID ID { get; set; } = ChallengeID.NewGuid();
+
+    public DateTime Begin { get; set; } = DateTime.Now;
+    public TimeSpan Duration { get; set; } = TimeSpan.FromDays(1);
+
+    List<Objectif> Objectifs { get; set; } = new();
+
+    /// ================= Properties =========
     DateTime End => Begin + Duration;
 
-    ChallengesID ID;
-    List<Challenge> All;
+    TimeSpan TimeRemaning => End - CurrentTime;
+    ChallengePeriod Period 
+    { 
+        get 
+        { 
+            if (IsActive) { return ChallengePeriod.Active; }
+            if (IsPast  ) { return ChallengePeriod.Past  ; }
+            if (IsFutur ) { return ChallengePeriod.Futur ; }
+            throw new Exception("pas possible");
+        }
+    }
 
-    //private Challenges(DateTime Begin, TimeSpan Duration,)
+    public bool IsActive => CurrentTime >= Begin && CurrentTime < End;
+    public bool IsPast => End < CurrentTime;
+    public bool IsFutur => Begin >= CurrentTime;
+
+    private Challenge() { }
+    public static Challenge Daily(List<Objectif> objectifs) { var c = new Challenge(); c.Objectifs = objectifs; return c; }
 }
 
 /// <summary>
-/// Contient le score actuel pour un challenge
+/// A participation for a person in a challenge
 /// </summary>
-public class Challenge
+public class ChallengeEntry : AppContext
 {
-    Score PlayerScore;
-    int   GoalIdx;
-    ChallengeObjectif Objectif;
+    public ChallengeEntryID ID;
+    public User     User;
+    public Score    PlayerScore;
+    public int      GoalIdx;
+    public Objectif Objectifs;
+}
+
+/// <summary>
+/// A participation for a person in an objectif
+/// </summary>
+public class ObjectifEntry : AppContext
+{
+    public ObjectifEntryID ID;
+    public User User;
+    public Objectif Objectif;
+    //Challenge Objectifs;
 }
 
 public struct Score 
@@ -35,31 +94,31 @@ public struct Score
     public static Score Pompe(double value) => new Score(value);
 }
 
-public enum ChallengeKind 
+public enum ObjectifKind 
 {
     Courrir,
     Pompe,
 }
 
 /// <summary>
-/// Contient l'objectif du challenge
+/// Description of a challenge
 /// </summary>
-public class ChallengeObjectif
+public class Objectif : AppContext
 {
-    //public string      Name;
-    public ChallengeKind Kind;
+    public ObjectifID    ID;
+    public ObjectifKind  Kind;
     public TimeSpan?     MaxTime;
     public List<Goal>    Goals;
 }
 
-public class Goal 
+public class Goal : AppContext
 {
     Score    ScoreToReach;
     XP       Reward;
 }
 
 
-public class User
+public class User : AppContext
 {
     UserID IP;
     Pseudo Pseudo;
@@ -95,16 +154,6 @@ public record Pseudo
     public Pseudo? New(string name) 
     { 
         return name.Length <= 16 && name.All(x => Pseudo.AllowedChar.Contains(x)) ? new Pseudo(name) : null;
-    }
-}
-
-public record UserID
-{
-    int id;
-
-    public UserID(int id)
-    {
-        this.id = id;
     }
 }
 
