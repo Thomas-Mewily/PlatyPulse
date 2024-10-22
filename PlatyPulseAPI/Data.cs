@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics.Metrics;
+using static System.Net.WebRequestMethods;
 
 namespace PlatyPulseAPI;
 
@@ -10,7 +11,7 @@ public enum ChallengePeriod
     Futur,
 }
 
-public class Challenge : ApplicationContext, IEnumerable<Goal>
+public class Challenge : PlatyAppComponent, IEnumerable<Goal>
 {
     public static Challenge Default { get; private set; } = new();
 
@@ -20,7 +21,7 @@ public class Challenge : ApplicationContext, IEnumerable<Goal>
     public DateTime Begin { get; set; } = DateTime.Now;
     public TimeSpan Duration { get; set; } = TimeSpan.FromDays(1);
 
-    public List<Goal> Objectifs { get; set; } = [];
+    public List<Goal> Goals { get; set; } = [];
 
     /// ================= Properties =========
     public DateTime End => Begin + Duration;
@@ -42,10 +43,10 @@ public class Challenge : ApplicationContext, IEnumerable<Goal>
     public bool IsFutur => Begin >= CurrentTime;
 
     private Challenge() { }
-    public static Challenge Daily(List<Goal> objectifs) { var c = new Challenge(); c.Objectifs = objectifs; return c; }
+    public static Challenge Daily(List<Goal> objectifs) { var c = new Challenge(); c.Goals = objectifs; return c; }
 
-    public IEnumerator<Goal> GetEnumerator() => ((IEnumerable<Goal>)Objectifs).GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Objectifs).GetEnumerator();
+    public IEnumerator<Goal> GetEnumerator() => ((IEnumerable<Goal>)Goals).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Goals).GetEnumerator();
 
     public override string ToString()
     {
@@ -61,14 +62,14 @@ public class Challenge : ApplicationContext, IEnumerable<Goal>
         if (this.Duration == TimeSpan.FromDays(1)) { duration_str = "daily"; }
         if (this.Duration == TimeSpan.FromDays(7)) { duration_str = "weekly"; }
 
-        return time_str + " " + duration_str + " challenge consist of " + string.Join(" and ", Objectifs.Select(x => x.ToString()));
+        return time_str + " " + duration_str + " challenge consist of " + string.Join(" and ", Goals.Select(x => x.ToString()));
     }
 }
 
 /// <summary>
 /// A participation for a person in a challenge
 /// </summary>
-public class ChallengeEntry : ApplicationContext
+public class ChallengeEntry : PlatyAppComponent
 {
     public ChallengeEntryID ID = ChallengeID.Empty;
     public User             User  = User.Default;
@@ -87,7 +88,7 @@ public class ChallengeEntry : ApplicationContext
 /// <summary>
 /// A participation for a person in an objectif
 /// </summary>
-public class GoalEntry : ApplicationContext
+public class GoalEntry : PlatyAppComponent
 {
     public GoalEntryID ID;
     public User        User;
@@ -147,12 +148,27 @@ public enum GoalKind
 /// <summary>
 /// Description of a Goal
 /// </summary>
-public class Goal : ApplicationContext, IEnumerable<Rank>
+public class Goal : PlatyAppComponent, IEnumerable<Rank>
 {
     public GoalID        ID = GoalID.Empty;
     public GoalKind      Kind;
     public List<Rank>    Rank;
     public TimeSpan?     MaxTime;
+
+    public string Description => Kind.ToString();
+
+    public string KindImgPath 
+    { 
+        get 
+        {
+            switch (Kind)
+            {
+                case GoalKind.Run: return "https://media.tenor.com/mo6Te6bSxEcAAAAi/quby-run.gif"; // "run.png";
+                case GoalKind.PushUp: return "https://c.tenor.com/NWooEQHLpTgAAAAC/tenor.gif"; // "push_up.png";
+            }
+            throw new NotImplementedException();
+        } 
+    }
 
     public Goal(GoalKind kind, List<Rank> rank, TimeSpan? maxTime = null) : this(GoalID.Empty, kind, rank, maxTime) { }
     public Goal(ChallengeID id, GoalKind kind, List<Rank> rank, TimeSpan? maxTime = null)
@@ -171,14 +187,14 @@ public class Goal : ApplicationContext, IEnumerable<Rank>
         var kind_str = "?";
         switch (Kind)
         {
-            case GoalKind.Run: { kind_str = "running"; } break;
+            case GoalKind.Run: { kind_str = "run"; } break;
             case GoalKind.PushUp:  { kind_str = "push up"; } break;
         }
         return kind_str + " (" + String.Join(", ", Rank.Select(r => r.ToString())) + ")";
     }
 }
 
-public class Rank : ApplicationContext
+public class Rank : PlatyAppComponent
 {
     Score    ScoreToReach;
     XP       Reward;
@@ -193,7 +209,7 @@ public class Rank : ApplicationContext
 }
 
 
-public class User : ApplicationContext
+public class User : PlatyAppComponent
 {
     public static User Default { get; private set; } = new User();
     UserID ID = UserID.Empty;
@@ -272,3 +288,4 @@ public struct XP
     public static XP operator -(XP left) => new XP(-left.Value);
     public static XP operator*(XP left, int right) => new XP(left.Value * right);
 }
+

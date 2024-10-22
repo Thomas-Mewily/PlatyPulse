@@ -9,9 +9,9 @@ using System.Diagnostics;
 
 namespace PlatyPulseAPI;
 
-public class Application : ApplicationContext
+public class PlatyApp : PlatyAppComponent
 {
-    public static Application Instance { get; private set; } = new Application();
+    public static PlatyApp Instance { get; private set; } = new PlatyApp();
     public new DateTime CurrentTime = DateTime.Now;
 
     public new User? CurrentUser;
@@ -22,6 +22,35 @@ public class Application : ApplicationContext
 
     public Dictionary<GoalID, Goal> AllGoals = [];
     public Dictionary<GoalEntryID, GoalEntry> AllGoalsEntries = [];
+
+    public void LoadExample() 
+    {
+        var run =
+                new Goal(GoalKind.Run,
+                    [
+                    new Rank(100.Meter(), 10.XP()),
+                new Rank(200.Meter(), 30.XP()),
+                new Rank(500.Meter(), 70.XP()),
+                new Rank(1.KiloMeter(), 1500.XP()),
+                new Rank(3.KiloMeter(), 3500.XP()),
+                new Rank(5.KiloMeter(), 6500.XP()),
+                    ]
+                );
+
+        var push_up =
+        new Goal(GoalKind.PushUp,
+            [
+            new Rank(1.PushUp(), 1.XP()),
+                new Rank(3.PushUp(), 5.XP()),
+                new Rank(10.PushUp(), 30.XP()),
+                new Rank(20.PushUp(), 100.XP()),
+            ]
+        );
+
+        var c = Challenge.Daily([run, push_up]);
+        AddChallenge(c);
+        App.DailyChallenge = c;
+    }
 
     public void Update() 
     {
@@ -43,9 +72,9 @@ public class Application : ApplicationContext
 /// <summary>
 ///  Contains only properties to access the application data
 /// </summary>
-public class ApplicationContext
+public class PlatyAppComponent
 {
-    public Application App => Application.Instance;
+    public PlatyApp App => PlatyApp.Instance;
 
     public DateTime CurrentTime => App.CurrentTime;
     public User? CurrentUser => App.CurrentUser;
@@ -82,5 +111,5 @@ public class ApplicationContext
 
     public GoalEntry? ObserveGoalEntry(GoalEntryID goalEntryID) => App.AllGoalsEntries.GetOrNull(goalEntryID);
 
-    public ApplicationContext() { }
+    public PlatyAppComponent() { }
 }

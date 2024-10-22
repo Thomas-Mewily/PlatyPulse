@@ -30,7 +30,55 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill" />
+
+
+
+
+            <Label
+                Text="Daily Goals :"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <!-- CollectionView to display Goals -->
+            <CollectionView ItemsSource="{Binding Goals}" Margin="0,20,0,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray" CornerRadius="8" Padding="10" Margin="5">
+                            <StackLayout Orientation="Horizontal" Spacing="10">
+
+                                <!-- Goal Image -->
+                                <Image Source="{Binding KindImgPath}" 
+                                       HeightRequest="80" 
+                                       WidthRequest="80"
+                                       Aspect="AspectFill"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Start" />
+
+                                <!-- Goal Description -->
+                                <StackLayout>
+                                    <Label Text="{Binding Description}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="18" 
+                                           VerticalOptions="Center" />
+                                </StackLayout>
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <!-- End of CollectionView -->
+            
+
+
+            <Label
+                Text="Task end"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+
+
         </VerticalStackLayout>
+
     </ScrollView>
 
 </ContentPage>

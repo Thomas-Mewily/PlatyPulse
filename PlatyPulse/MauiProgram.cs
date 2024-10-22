@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using PlatyPulseAPI;
+using System.Collections.ObjectModel;
 
 namespace PlatyPulse;
 
