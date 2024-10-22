@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatyPulse", "PlatyPulse\PlatyPulse.csproj", "{230D4FDC-D925-4973-889B-CE0A929914AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatyPulse", "PlatyPulse\PlatyPulse.csproj", "{230D4FDC-D925-4973-889B-CE0A929914AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatyPulseAPI", "PlatyPulseAPI\PlatyPulseAPI.csproj", "{7C204DD3-69D2-459F-B3A1-3EF5A055D505}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatyPulseAPI", "PlatyPulseAPI\PlatyPulseAPI.csproj", "{7C204DD3-69D2-459F-B3A1-3EF5A055D505}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatyPulseAPITest", "PlatiPulseAPITest\PlatyPulseAPITest.csproj", "{3FF31C34-E767-4337-B1AD-1DE4FC44F653}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{7C204DD3-69D2-459F-B3A1-3EF5A055D505}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C204DD3-69D2-459F-B3A1-3EF5A055D505}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C204DD3-69D2-459F-B3A1-3EF5A055D505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FF31C34-E767-4337-B1AD-1DE4FC44F653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FF31C34-E767-4337-B1AD-1DE4FC44F653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FF31C34-E767-4337-B1AD-1DE4FC44F653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FF31C34-E767-4337-B1AD-1DE4FC44F653}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
