@@ -21,9 +21,21 @@
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
-  <Resources>
-    <Resource Language="x-generate" />
-  </Resources>
+<Resources>
+    <Resource Language="en-US"/>
+	<Resource Language="fr-FR"/>
+	<!--
+		<Resource Language="de-DE"/>
+		<Resource Language="es-ES"/>
+
+		<Resource Language="ja-JP"/>
+		<Resource Language="pt-BR"/>
+		<Resource Language="pt-PT"/>
+		<Resource Language="ru-RU"/>
+		<Resource Language="zh-CN"/>
+		<Resource Language="zh-TW"/>
+	-->
+</Resources>
 
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">

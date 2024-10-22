@@ -70,4 +70,19 @@
 	  <ProjectReference Include="..\PlatyPulseAPI\PlatyPulseAPI.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Resources\Languages\AppRes.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AppRes.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Languages\AppRes.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AppRes.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
 </Project>
