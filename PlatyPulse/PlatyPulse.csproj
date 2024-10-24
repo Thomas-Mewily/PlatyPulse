@@ -58,6 +58,7 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\Images\platypulse.png" />
+	  <None Remove="Resources\Images\platypulse_ia.png" />
 	</ItemGroup>
 
 	<ItemGroup>
