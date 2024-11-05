@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics.Metrics;
+using System.Text.Json.Serialization;
 using static System.Net.WebRequestMethods;
 
 namespace PlatyPulseAPI;
@@ -11,9 +12,9 @@ public enum ChallengePeriod
     Futur,
 }
 
-public class Challenge : PlatyAppComponent, IEnumerable<Goal>
+public class Challenge : PlatyAppComponent, IData
 {
-    public static Challenge Default { get; private set; } = new();
+    public static Challenge Default => new();
 
     /// ================= Fields =========
     public ChallengeID ID { get; set; } = ChallengeID.Empty;
@@ -27,6 +28,7 @@ public class Challenge : PlatyAppComponent, IEnumerable<Goal>
     public DateTime End => Begin + Duration;
     public TimeSpan TimeRemaning => End - CurrentTime;
 
+    [JsonIgnore]
     ChallengePeriod TimePeriod 
     { 
         get 
@@ -38,15 +40,15 @@ public class Challenge : PlatyAppComponent, IEnumerable<Goal>
         }
     }
 
+    [JsonIgnore]
     public bool IsActive => CurrentTime >= Begin && CurrentTime < End;
+    [JsonIgnore]
     public bool IsPast => End < CurrentTime;
+    [JsonIgnore]
     public bool IsFutur => Begin >= CurrentTime;
 
-    private Challenge() { }
+    public Challenge() { }
     public static Challenge Daily(List<Goal> objectifs) { var c = new Challenge(); c.Goals = objectifs; return c; }
-
-    public IEnumerator<Goal> GetEnumerator() => ((IEnumerable<Goal>)Goals).GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Goals).GetEnumerator();
 
     public override string ToString()
     {
@@ -69,11 +71,11 @@ public class Challenge : PlatyAppComponent, IEnumerable<Goal>
 /// <summary>
 /// A participation for a person in a challenge
 /// </summary>
-public class ChallengeEntry : PlatyAppComponent
+public class ChallengeEntry : PlatyAppComponent, IData
 {
-    public ChallengeEntryID ID = ChallengeID.Empty;
-    public User             User  = User.Default;
-    public List<GoalEntry>  Goals = [];
+    public ChallengeEntryID ID { get; set; } = ChallengeID.Empty;
+    public User             User { get; set; } = User.Default;
+    public List<GoalEntry>  Goals { get; set; } = [];
 
     public ChallengeEntry() { }
     public ChallengeEntry(User user, List<GoalEntry> goals) : this(ChallengeID.NewGuid(), user, goals) { }
@@ -88,14 +90,15 @@ public class ChallengeEntry : PlatyAppComponent
 /// <summary>
 /// A participation for a person in an objectif
 /// </summary>
-public class GoalEntry : PlatyAppComponent
+public class GoalEntry : PlatyAppComponent, IData
 {
-    public GoalEntryID ID;
-    public User        User;
-    public Score       Score;
-    public Goal        Goal;
-    public int         RankIdx;
+    public GoalEntryID ID { get; set;}
+    public User        User { get; set; }
+    public Score       Score { get; set; }
+    public Goal        Goal { get; set; }
+    public int         RankIdx { get; set; }
 
+    public GoalEntry() : this(ID.Empty, User.Default, 1.Meter(), new Goal(GoalKind.Run)) { }
     public GoalEntry(User user, Score score, Goal goal, int rankIdx = 0) : this(GoalEntryID.Empty, user, score, goal, rankIdx) { }
     public GoalEntry(ChallengeID id, User user, Score score, Goal goal, int rankIdx = 0)
     {
@@ -108,10 +111,12 @@ public class GoalEntry : PlatyAppComponent
 }
 
 public enum ScoreKind { Distance, PushUp }
-public struct Score 
+public struct Score
 {
-    private double Value;
-    private ScoreKind Kind;
+    public double Value { get; set; }
+    public ScoreKind Kind { get; set; }
+
+    public Score() : this(0, ScoreKind.Distance) { }
     private Score(double value, ScoreKind kind) { Value = value; Kind = kind; }
 
     public double AsDouble { get => Value; set => Value = value; }
@@ -148,15 +153,16 @@ public enum GoalKind
 /// <summary>
 /// Description of a Goal
 /// </summary>
-public class Goal : PlatyAppComponent, IEnumerable<Rank>
+public class Goal : PlatyAppComponent, IData
 {
-    public GoalID        ID = GoalID.Empty;
-    public GoalKind      Kind;
-    public List<Rank>    Rank;
-    public TimeSpan?     MaxTime;
+    public GoalID      ID      { get; set; } = GoalID.Empty;
+    public GoalKind    Kind    { get; set; }
+    public List<Rank>  Rank    { get; set; }
+    public TimeSpan?   MaxTime { get; set; }
 
     public string Description => Kind.ToString();
 
+    [JsonIgnore]
     public string KindImgPath 
     { 
         get 
@@ -170,6 +176,8 @@ public class Goal : PlatyAppComponent, IEnumerable<Rank>
         } 
     }
 
+    public Goal() : this(GoalKind.Run, []) { }
+    public Goal(GoalKind kind, TimeSpan? maxTime = null) : this(kind, [], maxTime) { }
     public Goal(GoalKind kind, List<Rank> rank, TimeSpan? maxTime = null) : this(GoalID.Empty, kind, rank, maxTime) { }
     public Goal(ChallengeID id, GoalKind kind, List<Rank> rank, TimeSpan? maxTime = null)
     {
@@ -178,9 +186,6 @@ public class Goal : PlatyAppComponent, IEnumerable<Rank>
         MaxTime = maxTime;
         Rank = rank;
     }
-
-    public IEnumerator<Rank> GetEnumerator() => ((IEnumerable<Rank>)Rank).GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)Rank).GetEnumerator();
 
     public override string ToString()
     {
@@ -196,9 +201,10 @@ public class Goal : PlatyAppComponent, IEnumerable<Rank>
 
 public class Rank : PlatyAppComponent
 {
-    Score    ScoreToReach;
-    XP       Reward;
+    public Score ScoreToReach { get; set; }
+    public XP Reward { get; set; }
 
+    public Rank() : this(0.Meter(), 0.XP()) { }
     public Rank(Score scoreToReach, XP reward)
     {
         ScoreToReach = scoreToReach;
@@ -209,16 +215,17 @@ public class Rank : PlatyAppComponent
 }
 
 
-public class User : PlatyAppComponent
+public class User : PlatyAppComponent, IData
 {
-    public static User Default { get; private set; } = new User();
-    UserID ID = UserID.Empty;
-    Pseudo Pseudo = Pseudo.Default;
+    public static User Default => new User();
 
-    DateTime CreationData = DateTime.Now;
-    DateTime Birthday = new DateTime(1000);
+    public UserID ID { get; set; } = UserID.Empty;
+    public Pseudo Pseudo { get; set; } = Pseudo.Default;
 
-    XP XP = XP.Zero;
+    public DateTime CreationData { get; set; } = DateTime.Now;
+    public DateTime Birthday { get; set; } = new DateTime(1000);
+
+    public XP XP { get; set; } = XP.Zero;
 
     public User() { }
     public User(Pseudo pseudo, DateTime creationData, DateTime birthday, XP xP) : this(UserID.Empty, pseudo, creationData, birthday, xP) { } 
@@ -244,7 +251,7 @@ public record Pseudo
 {
     public string Name { get; set; }
 
-    public static Pseudo Default { get; private set; } = new("undefined");
+    public static Pseudo Default => new("undefined");
 
     /// <summary>
     /// Stored in ascii order
@@ -270,7 +277,7 @@ public record Pseudo
 public struct XP
 {
     public static XP Zero { get; private set; } = new XP(0);
-    public int Value;
+    public int Value { get; set; }
 
     public XP(int value)
     {
@@ -285,7 +292,20 @@ public struct XP
 
     public static XP operator+(XP left, XP right) => new XP(left.Value + right.Value);
     public static XP operator-(XP left, XP right) => new XP(left.Value - right.Value);
-    public static XP operator -(XP left) => new XP(-left.Value);
+    public static XP operator-(XP left) => new XP(-left.Value);
     public static XP operator*(XP left, int right) => new XP(left.Value * right);
 }
 
+
+public class Test
+{
+    public string Nom;
+    public string Prenom { get; set; }
+
+    public Test(string nom, string prenom)
+    {
+        Nom = nom;
+        Prenom = prenom;
+    }
+
+}

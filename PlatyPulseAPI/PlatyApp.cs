@@ -1,11 +1,13 @@
-﻿global using ChallengeID   = System.Guid;
-global using GoalID   = System.Guid;
-global using UserID        = System.Guid;
+﻿global using ID   = System.Guid;
+global using ChallengeID      = System.Guid;
+global using GoalID           = System.Guid;
+global using UserID           = System.Guid;
 global using ChallengeEntryID = System.Guid;
-global using GoalEntryID = System.Guid;
+global using GoalEntryID      = System.Guid;
 global using Meter = double;
 global using PushUp = int;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI;
 
@@ -74,12 +76,14 @@ public class PlatyApp : PlatyAppComponent
 /// </summary>
 public class PlatyAppComponent
 {
+    [JsonIgnore]
     public PlatyApp App => PlatyApp.Instance;
-
+    [JsonIgnore]
     public DateTime CurrentTime => App.CurrentTime;
+    [JsonIgnore]
     public User? CurrentUser => App.CurrentUser;
+    [JsonIgnore]
     public Challenge DailyChallenge => App.DailyChallenge;
-
 
     public Challenge? ObserveChallenge(ChallengeID challengeID) => App.AllChallenges.GetOrNull(challengeID);
     public ChallengeID AddChallenge(Challenge challenge)
@@ -89,7 +93,8 @@ public class PlatyAppComponent
             challenge.ID = ChallengeID.NewGuid();
             App.AllChallenges.Add(challenge.ID, challenge);
         }
-        foreach(var goal in challenge) 
+
+        foreach(var goal in challenge.Goals) 
         {
             AddGoal(goal);
         }
