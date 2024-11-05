@@ -8,10 +8,15 @@
             Padding="30,0"
             Spacing="25">
             <Image
+                x:Name="ClickableImage"
                 Source="platypulse.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a race car number eight" />
+                SemanticProperties.Description="Platypulse Logo">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
 
             <Label
                 Text="Hello, World!"
