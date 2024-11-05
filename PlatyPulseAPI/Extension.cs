@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace PlatyPulseAPI;
+﻿namespace PlatyPulseAPI;
 
 public static class Extension
 {
@@ -32,4 +30,7 @@ public static class Extension
     /// <exception cref="ArgumentNullException"></exception>
     public static T Unwrap<T>(this T? t, string error = "not supposed to be null")
         => (t == null) ? throw new ArgumentNullException(error) : t!;
+
+
+    public static void Panic(this object o) => throw new Exception(o.ToString());
 }

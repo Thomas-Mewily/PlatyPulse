@@ -5,6 +5,20 @@ using static System.Net.WebRequestMethods;
 
 namespace PlatyPulseAPI;
 
+public class Data : PlatyAppComponent
+{
+    public ID ID { get; set; }
+
+    /// <summary>
+    /// Upload the data to the server
+    /// </summary>
+    public void ServerUpload() { "todo".Panic(); }
+    /// <summary>
+    /// Download the data from the server
+    /// </summary>
+    public void ServerDownload() { "todo".Panic(); }
+}
+
 public enum ChallengePeriod 
 {
     Past,
@@ -12,12 +26,11 @@ public enum ChallengePeriod
     Futur,
 }
 
-public class Challenge : PlatyAppComponent, IData
+public class Challenge : Data 
 {
     public static Challenge Default => new();
 
     /// ================= Fields =========
-    public ChallengeID ID { get; set; } = ChallengeID.Empty;
 
     public DateTime Begin { get; set; } = DateTime.Now;
     public TimeSpan Duration { get; set; } = TimeSpan.FromDays(1);
@@ -71,9 +84,8 @@ public class Challenge : PlatyAppComponent, IData
 /// <summary>
 /// A participation for a person in a challenge
 /// </summary>
-public class ChallengeEntry : PlatyAppComponent, IData
+public class ChallengeEntry : Data
 {
-    public ChallengeEntryID ID { get; set; } = ChallengeID.Empty;
     public User             User { get; set; } = User.Default;
     public List<GoalEntry>  Goals { get; set; } = [];
 
@@ -90,9 +102,8 @@ public class ChallengeEntry : PlatyAppComponent, IData
 /// <summary>
 /// A participation for a person in an objectif
 /// </summary>
-public class GoalEntry : PlatyAppComponent, IData
+public class GoalEntry : Data
 {
-    public GoalEntryID ID { get; set;}
     public User        User { get; set; }
     public Score       Score { get; set; }
     public Goal        Goal { get; set; }
@@ -153,13 +164,13 @@ public enum GoalKind
 /// <summary>
 /// Description of a Goal
 /// </summary>
-public class Goal : PlatyAppComponent, IData
+public class Goal : Data
 {
-    public GoalID      ID      { get; set; } = GoalID.Empty;
     public GoalKind    Kind    { get; set; }
     public List<Rank>  Rank    { get; set; }
     public TimeSpan?   MaxTime { get; set; }
 
+    [JsonIgnore]
     public string Description => Kind.ToString();
 
     [JsonIgnore]
@@ -215,11 +226,10 @@ public class Rank : PlatyAppComponent
 }
 
 
-public class User : PlatyAppComponent, IData
+public class User : Data
 {
     public static User Default => new User();
 
-    public UserID ID { get; set; } = UserID.Empty;
     public Pseudo Pseudo { get; set; } = Pseudo.Default;
 
     public DateTime CreationData { get; set; } = DateTime.Now;

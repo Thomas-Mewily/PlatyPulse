@@ -13,7 +13,17 @@ public static class Json
 
     public static string ToJson<T>(this T o) => JsonSerializer.Serialize(o, JsonOption);
 
-    public static T? TryFromJson<T>(string json) => JsonSerializer.Deserialize<T>(json, JsonOption);
+    public static T? TryFromJson<T>(string json) 
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<T>(json, JsonOption);
+        }
+        catch (Exception) 
+        { 
+            return default;  
+        }
+    }
     public static T FromJson<T>(string json) => TryFromJson<T>(json).Unwrap();
 }
 
