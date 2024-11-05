@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 namespace PlatyPulse;
 
+
+
 public class ViewChallenge : PlatyAppComponent
 {
     public Challenge Challenge;
@@ -17,6 +19,8 @@ public class ViewChallenge : PlatyAppComponent
 public partial class MainPage : ContentPage
 {
     ViewChallenge ViewChallenge;
+    private int imageClickCount = 0;
+    private bool changedImaged = false;
     int count = 0;
 
     public MainPage()
@@ -39,4 +43,22 @@ public partial class MainPage : ContentPage
 
         //SemanticScreenReader.Announce(CounterBtn.Text);
     }
+
+
+
+    private async void OnImageTapped(object sender, EventArgs e)
+    {
+        imageClickCount++;
+        await ClickableImage.ScaleTo(1.2, 100); // 100 ms pour l'agrandissement
+                                                
+        await ClickableImage.ScaleTo(1.0, 100); // 100 ms pour le rétrécissement
+
+        if (imageClickCount >= 12 && !changedImaged)
+        {
+            ClickableImage.Source = "platypulse_hiden.png"; 
+            imageClickCount = 0;
+            changedImaged = true;
+        }
+    }
+
 }
