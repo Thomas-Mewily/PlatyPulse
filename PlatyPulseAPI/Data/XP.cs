@@ -1,9 +1,9 @@
 ﻿namespace PlatyPulseAPI.Data;
 
-public record XP(int value)
+public record XP(int Value)
 {
     public static XP Zero { get; private set; } = new XP(0);
-    public int Value { get; set; } = value;
+    public int Value { get; set; } = Value;
 
     public override string ToString()
     {
