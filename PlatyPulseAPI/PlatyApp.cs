@@ -1,9 +1,9 @@
-﻿global using ID   = System.Guid;
+﻿global using ID               = System.Guid;
 global using ChallengeID      = System.Guid;
-global using GoalID           = System.Guid;
+global using QuestID          = System.Guid;
 global using UserID           = System.Guid;
 global using ChallengeEntryID = System.Guid;
-global using GoalEntryID      = System.Guid;
+global using QuestEntryID     = System.Guid;
 global using Meter = double;
 global using PushUp = int;
 using System.Diagnostics;
@@ -22,13 +22,13 @@ public class PlatyApp : PlatyAppComponent
     public Dictionary<ChallengeID, Challenge> AllChallenges = [];
     public Dictionary<ChallengeEntryID, ChallengeEntry> AllChallengesEntries = [];
 
-    public Dictionary<GoalID, Goal> AllGoals = [];
-    public Dictionary<GoalEntryID, GoalEntry> AllGoalsEntries = [];
+    public Dictionary<QuestID, Quest> AllQuests = [];
+    public Dictionary<QuestEntryID, QuestEntry> AllQuestsEntries = [];
 
     public void LoadExample() 
     {
         var run =
-                new Goal(GoalKind.Run,
+                new Quest(QuestKind.Run,
                     [
                         new Rank(100.Meter(), 10.XP()),
                         new Rank(200.Meter(), 30.XP()),
@@ -40,7 +40,7 @@ public class PlatyApp : PlatyAppComponent
                 );
 
         var push_up =
-        new Goal(GoalKind.PushUp,
+        new Quest(QuestKind.PushUp,
             [
                 new Rank(1.PushUp(), 1.XP()),
                 new Rank(3.PushUp(), 5.XP()),
@@ -94,27 +94,27 @@ public class PlatyAppComponent
             App.AllChallenges.Add(challenge.ID, challenge);
         }
 
-        foreach(var goal in challenge.Goals) 
+        foreach(var q in challenge.Quests) 
         {
-            AddGoal(goal);
+            AddQuest(q);
         }
         return challenge.ID;
     }
 
     public ChallengeEntry? ObserveChallengeEntry(ChallengeEntryID challengeEntryID) => App.AllChallengesEntries.GetOrNull(challengeEntryID);
 
-    public Goal? ObserveGoal(GoalID goalID) => App.AllGoals.GetOrNull(goalID);
-    public GoalID AddGoal(Goal goal) 
+    public Quest? ObserveQuest(QuestID questID) => App.AllQuests.GetOrNull(questID);
+    public QuestID AddQuest(Quest quest) 
     {
-        if (goal.ID == GoalID.Empty) 
+        if (quest.ID == QuestID.Empty) 
         {
-            goal.ID = GoalID.NewGuid();
-            App.AllGoals.Add(goal.ID, goal);
+            quest.ID = QuestID.NewGuid();
+            App.AllQuests.Add(quest.ID, quest);
         }
-        return goal.ID;
+        return quest.ID;
     }
 
-    public GoalEntry? ObserveGoalEntry(GoalEntryID goalEntryID) => App.AllGoalsEntries.GetOrNull(goalEntryID);
+    public QuestEntry? ObserveQuestEntry(QuestEntryID questEntryID) => App.AllQuestsEntries.GetOrNull(questEntryID);
 
     public PlatyAppComponent() { }
 }

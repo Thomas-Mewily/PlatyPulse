@@ -40,18 +40,18 @@
 
 
             <Label
-                Text="Daily Goals :"
+                Text="Daily Quests :"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
-            <!-- CollectionView to display Goals -->
-            <CollectionView ItemsSource="{Binding Goals}" Margin="0,20,0,0">
+            <!-- CollectionView to display Quests -->
+            <CollectionView ItemsSource="{Binding Quests}" Margin="0,20,0,0">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame BorderColor="LightGray" CornerRadius="8" Padding="10" Margin="5">
                             <StackLayout Orientation="Horizontal" Spacing="10">
 
-                                <!-- Goal Image -->
+                                <!-- Quest Image -->
                                 <Image Source="{Binding KindImgPath}" 
                                        HeightRequest="80" 
                                        WidthRequest="80"
@@ -59,7 +59,7 @@
                                        VerticalOptions="Center"
                                        HorizontalOptions="Start" />
 
-                                <!-- Goal Description -->
+                                <!-- Quest Description -->
                                 <StackLayout>
                                     <Label Text="{Binding Description}" 
                                            FontAttributes="Bold" 

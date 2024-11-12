@@ -5,7 +5,7 @@ using static System.Net.WebRequestMethods;
 
 namespace PlatyPulseAPI;
 
-public class Data : PlatyAppComponent
+public abstract class Data : PlatyAppComponent
 {
     public ID ID { get; set; }
 
@@ -35,7 +35,7 @@ public class Challenge : Data
     public DateTime Begin { get; set; } = DateTime.Now;
     public TimeSpan Duration { get; set; } = TimeSpan.FromDays(1);
 
-    public List<Goal> Goals { get; set; } = [];
+    public List<Quest> Quests { get; set; } = [];
 
     /// ================= Properties =========
     public DateTime End => Begin + Duration;
@@ -61,7 +61,7 @@ public class Challenge : Data
     public bool IsFutur => Begin >= CurrentTime;
 
     public Challenge() { }
-    public static Challenge Daily(List<Goal> objectifs) { var c = new Challenge(); c.Goals = objectifs; return c; }
+    public static Challenge Daily(List<Quest> objectifs) { var c = new Challenge(); c.Quests = objectifs; return c; }
 
     public override string ToString()
     {
@@ -77,7 +77,7 @@ public class Challenge : Data
         if (this.Duration == TimeSpan.FromDays(1)) { duration_str = "daily"; }
         if (this.Duration == TimeSpan.FromDays(7)) { duration_str = "weekly"; }
 
-        return time_str + " " + duration_str + " challenge consist of " + string.Join(" and ", Goals.Select(x => x.ToString()));
+        return time_str + " " + duration_str + " challenge consist of " + string.Join(" and ", Quests.Select(x => x.ToString()));
     }
 }
 
@@ -86,37 +86,37 @@ public class Challenge : Data
 /// </summary>
 public class ChallengeEntry : Data
 {
-    public User             User { get; set; } = User.Default;
-    public List<GoalEntry>  Goals { get; set; } = [];
+    public User              User { get; set; } = User.Default;
+    public List<QuestEntry>  Quest { get; set; } = [];
 
     public ChallengeEntry() { }
-    public ChallengeEntry(User user, List<GoalEntry> goals) : this(ChallengeID.NewGuid(), user, goals) { }
-    public ChallengeEntry(ChallengeID id, User user, List<GoalEntry> goals)
+    public ChallengeEntry(User user, List<QuestEntry> quests_entries) : this(ChallengeID.NewGuid(), user, quests_entries) { }
+    public ChallengeEntry(ChallengeID id, User user, List<QuestEntry> quest_entries)
     {
         ID = id;
         User = user;
-        Goals = goals;
+        Quest = quest_entries;
     }
 }
 
 /// <summary>
 /// A participation for a person in an objectif
 /// </summary>
-public class GoalEntry : Data
+public class QuestEntry : Data
 {
-    public User        User { get; set; }
-    public Score       Score { get; set; }
-    public Goal        Goal { get; set; }
+    public User        User    { get; set; }
+    public Score       Score   { get; set; }
+    public Quest       Quest   { get; set; }
     public int         RankIdx { get; set; }
 
-    public GoalEntry() : this(ID.Empty, User.Default, 1.Meter(), new Goal(GoalKind.Run)) { }
-    public GoalEntry(User user, Score score, Goal goal, int rankIdx = 0) : this(GoalEntryID.Empty, user, score, goal, rankIdx) { }
-    public GoalEntry(ChallengeID id, User user, Score score, Goal goal, int rankIdx = 0)
+    public QuestEntry() : this(ID.Empty, User.Default, 1.Meter(), new Quest(QuestKind.Run)) { }
+    public QuestEntry(User user, Score score, Quest quest, int rankIdx = 0) : this(QuestEntryID.Empty, user, score, quest, rankIdx) { }
+    public QuestEntry(ChallengeID id, User user, Score score, Quest quest, int rankIdx = 0)
     {
         ID = id;
         User = user;
         Score = score;
-        Goal = goal;
+        Quest = quest;
         RankIdx = rankIdx;
     }
 }
@@ -155,18 +155,18 @@ public struct Score
     }
 }
 
-public enum GoalKind 
+public enum QuestKind 
 {
     Run,
     PushUp,
 }
 
 /// <summary>
-/// Description of a Goal
+/// Description of a Quest
 /// </summary>
-public class Goal : Data
+public class Quest : Data
 {
-    public GoalKind    Kind    { get; set; }
+    public QuestKind    Kind    { get; set; }
     public List<Rank>  Rank    { get; set; }
     public TimeSpan?   MaxTime { get; set; }
 
@@ -180,17 +180,17 @@ public class Goal : Data
         {
             switch (Kind)
             {
-                case GoalKind.Run: return "https://media.tenor.com/mo6Te6bSxEcAAAAi/quby-run.gif"; // "run.png";
-                case GoalKind.PushUp: return "https://c.tenor.com/NWooEQHLpTgAAAAC/tenor.gif"; // "push_up.png";
+                case QuestKind.Run: return "https://media.tenor.com/mo6Te6bSxEcAAAAi/quby-run.gif"; // "run.png";
+                case QuestKind.PushUp: return "https://c.tenor.com/NWooEQHLpTgAAAAC/tenor.gif"; // "push_up.png";
             }
             throw new NotImplementedException();
         } 
     }
 
-    public Goal() : this(GoalKind.Run, []) { }
-    public Goal(GoalKind kind, TimeSpan? maxTime = null) : this(kind, [], maxTime) { }
-    public Goal(GoalKind kind, List<Rank> rank, TimeSpan? maxTime = null) : this(GoalID.Empty, kind, rank, maxTime) { }
-    public Goal(ChallengeID id, GoalKind kind, List<Rank> rank, TimeSpan? maxTime = null)
+    public Quest() : this(QuestKind.Run, []) { }
+    public Quest(QuestKind kind, TimeSpan? maxTime = null) : this(kind, [], maxTime) { }
+    public Quest(QuestKind kind, List<Rank> rank, TimeSpan? maxTime = null) : this(QuestID.Empty, kind, rank, maxTime) { }
+    public Quest(ChallengeID id, QuestKind kind, List<Rank> rank, TimeSpan? maxTime = null)
     {
         ID = id;
         Kind = kind;
@@ -203,8 +203,8 @@ public class Goal : Data
         var kind_str = "?";
         switch (Kind)
         {
-            case GoalKind.Run: { kind_str = "run"; } break;
-            case GoalKind.PushUp:  { kind_str = "push up"; } break;
+            case QuestKind.Run: { kind_str = "run"; } break;
+            case QuestKind.PushUp:  { kind_str = "push up"; } break;
         }
         return kind_str + " (" + String.Join(", ", Rank.Select(r => r.ToString())) + ")";
     }
