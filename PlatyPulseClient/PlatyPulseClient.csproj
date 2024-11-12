@@ -8,12 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Database1.mdf" />
-    <None Remove="Database1_log.ldf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\PlatyPulseAPI\PlatyPulseAPI.csproj" />
+    <PackageReference Include="System.Net.Http.Json" Version="8.0.1" />
   </ItemGroup>
 
 </Project>
