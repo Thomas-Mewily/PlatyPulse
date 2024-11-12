@@ -1,6 +1,6 @@
 ﻿namespace PlatyPulseAPI.Data;
 
-public class Rank(Score scoreToReach, XP reward) : PlatyAppComponent
+public record Rank(Score scoreToReach, XP reward)
 {
     public Score ScoreToReach { get; set; } = scoreToReach;
     public XP Reward { get; set; } = reward;

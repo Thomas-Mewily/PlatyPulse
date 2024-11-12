@@ -29,30 +29,28 @@ public class MyDatabaseContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Use SQLite for simplicity
-        optionsBuilder.UseSqlite("Data Source=PlatyPulse.db");
+        optionsBuilder.UseSqlite("Data Source=PlatyPulseOk.db");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Key
         modelBuilder.Entity<IdentifiableData>().HasKey(s => s.ID);
 
 
-
+        // Table
         modelBuilder.Entity<User>();
 
         modelBuilder.Entity<Challenge>();
         modelBuilder.Entity<ChallengeEntry>();
 
-        modelBuilder.Entity<Quest>();
+        modelBuilder.Entity<Quest>().OwnsOne(q => q.Rank);
         modelBuilder.Entity<QuestEntry>();
 
-        modelBuilder.Entity<Quest>().OwnsOne(q => q.Rank);
-
-
-
+        // Value like
         modelBuilder.Owned<Pseudo>();
         modelBuilder.Owned<Score>();
         modelBuilder.Owned<XP>();
+        modelBuilder.Owned<List<Rank>>();
     }
 }
