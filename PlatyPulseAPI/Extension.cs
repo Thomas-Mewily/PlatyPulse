@@ -1,4 +1,5 @@
-﻿namespace PlatyPulseAPI;
+﻿using PlatyPulseAPI.Data;
+namespace PlatyPulseAPI;
 
 public static class Extension
 {
@@ -15,7 +16,7 @@ public static class Extension
     public static Score KiloMeter(this double i) => Score.NewKiloMeter(i);
 
 
-    public static XP XP(this int i) => new XP(i);
+    public static XP XP(this int i) => new(i);
 
     /// <summary>
     /// `T? => T or crash`

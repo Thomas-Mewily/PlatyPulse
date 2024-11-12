@@ -5,7 +5,7 @@ namespace PlatyPulseAPI;
 
 public static class Json
 {
-    private static JsonSerializerOptions JsonOption;
+    private static readonly JsonSerializerOptions JsonOption;
     static Json()
     {
         JsonOption = new JsonSerializerOptions();

@@ -1,23 +1,19 @@
-﻿using PlatyPulseAPI;
-namespace PlatiPulseAPITest;
+﻿namespace PlatyPulseAPITest;
+using PlatyPulseAPI;
+using PlatyPulseAPI.Data;
 
 public class Program : PlatyAppComponent
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        var p = new Program();
+        _ = new Program();
     }
 
-    public Program() 
+    public Program()
     {
         App.LoadExample();
         var d = DailyChallenge;
         Console.WriteLine(d);
-        
-        var t = new Test("nom2", "prenom2");
-        Console.WriteLine(t.ToJson());
-        Console.WriteLine();
-
 
         var json = d.ToJson();
         Console.WriteLine(json);
