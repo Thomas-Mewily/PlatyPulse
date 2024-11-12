@@ -33,30 +33,16 @@ public partial class MainPage : ContentPage
         BindingContext = ViewChallenge;
     }
 
-    //private void OnCounterClicked(object sender, EventArgs e)
-    //{
-    //    count++;
-
-    //    if (count == 1)
-    //        CounterBtn.Text = $"Clicked {count} time";
-    //    else
-    //        CounterBtn.Text = $"Clicked {count} times";
-
-        //SemanticScreenReader.Announce(CounterBtn.Text);
-    }
-
-
-
     private async void OnImageTapped(object sender, EventArgs e)
     {
         imageClickCount++;
         await ClickableImage.ScaleTo(1.2, 100); // 100 ms pour l'agrandissement
-                                                
+
         await ClickableImage.ScaleTo(1.0, 100); // 100 ms pour le rétrécissement
 
         if (imageClickCount >= 12 && !changedImaged)
         {
-            ClickableImage.Source = "platypulse_hiden.png"; 
+            ClickableImage.Source = "platypulse_hiden.png";
             imageClickCount = 0;
             changedImaged = true;
         }
