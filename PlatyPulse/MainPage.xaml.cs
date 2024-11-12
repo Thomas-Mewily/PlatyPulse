@@ -1,4 +1,5 @@
 ﻿using PlatyPulseAPI;
+using PlatyPulseAPI.Data;
 using System.Collections.ObjectModel;
 namespace PlatyPulse;
 
@@ -7,12 +8,12 @@ namespace PlatyPulse;
 public class ViewChallenge : PlatyAppComponent
 {
     public Challenge Challenge;
-    public ObservableCollection<Goal> Goals { get; set; }
+    public ObservableCollection<Quest> Quests { get; set; }
 
     public ViewChallenge(Challenge challenge) 
     { 
         Challenge = challenge;
-        Goals = new ObservableCollection<Goal>(challenge.Goals);
+        Quests = new ObservableCollection<Quest>(challenge.Quests);
     }
 }
 

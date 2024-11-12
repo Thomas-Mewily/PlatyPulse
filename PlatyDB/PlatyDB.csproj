@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Database1.mdf" />
+    <None Remove="Database1_log.ldf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PlatyPulseAPI\PlatyPulseAPI.csproj" />
   </ItemGroup>
 
