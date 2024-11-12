@@ -1,11 +1,11 @@
 ﻿namespace PlatyPulseAPI.Data;
 
-public struct XP(int value)
+public record XP(int value)
 {
     public static XP Zero { get; private set; } = new XP(0);
     public int Value { get; set; } = value;
 
-    public override readonly string ToString()
+    public override string ToString()
     {
         if (Value <= 1000) { return Value + " xp"; }
         return Value / 1000.0 + "K xp";

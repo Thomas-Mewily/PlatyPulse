@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI.Data;
 
-public abstract class IdentifiableData : PlatyAppComponent
+public class IdentifiableData : PlatyAppComponent
 {
     public ID ID { get; set; }
 
