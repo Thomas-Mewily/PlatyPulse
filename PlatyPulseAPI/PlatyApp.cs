@@ -1,13 +1,14 @@
-﻿global using ID               = System.Guid;
-global using ChallengeID      = System.Guid;
-global using QuestID          = System.Guid;
-global using UserID           = System.Guid;
+﻿global using ID = System.Guid;
+global using ChallengeID = System.Guid;
+global using QuestID = System.Guid;
+global using UserID = System.Guid;
 global using ChallengeEntryID = System.Guid;
-global using QuestEntryID     = System.Guid;
+global using QuestEntryID = System.Guid;
 global using Meter = double;
 global using PushUp = int;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using PlatyPulseAPI.Data;
 
 namespace PlatyPulseAPI;
 
@@ -77,7 +78,9 @@ public class PlatyApp : PlatyAppComponent
 public class PlatyAppComponent
 {
     [JsonIgnore]
+#pragma warning disable CA1822 // Marquer les membres comme étant static
     public PlatyApp App => PlatyApp.Instance;
+#pragma warning restore CA1822 // Marquer les membres comme étant static
     [JsonIgnore]
     public DateTime CurrentTime => App.CurrentTime;
     [JsonIgnore]
