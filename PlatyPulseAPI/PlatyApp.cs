@@ -9,22 +9,51 @@ global using PushUp = int;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using PlatyPulseAPI.Data;
+using System.Collections.ObjectModel;
 
 namespace PlatyPulseAPI;
 
 public class PlatyApp : PlatyAppComponent
 {
     public static PlatyApp Instance { get; private set; } = new PlatyApp();
-    public new DateTime CurrentTime = DateTime.Now;
 
-    public new User? CurrentUser;
-    public new Challenge DailyChallenge = Challenge.Default;
+    public new DateTime CurrentTime { get; private set; } = DateTime.Now;
 
-    public Dictionary<ChallengeID, Challenge> AllChallenges = [];
-    public Dictionary<ChallengeEntryID, ChallengeEntry> AllChallengesEntries = [];
+    public new User? CurrentUser { get; private set; }
+    public new Challenge DailyChallenge { get; private set; } = Challenge.Default;
 
-    public Dictionary<QuestID, Quest> AllQuests = [];
-    public Dictionary<QuestEntryID, QuestEntry> AllQuestsEntries = [];
+    public ReadOnlyDictionary<ChallengeID, Challenge> AllChallenges => _AllChallenges.AsReadOnly();
+    public Dictionary<ChallengeID, Challenge> _AllChallenges = [];
+
+    public ReadOnlyDictionary<ChallengeEntryID, ChallengeEntry> AllChallengesEntries => _AllChallengesEntries.AsReadOnly();
+    public Dictionary<ChallengeEntryID, ChallengeEntry> _AllChallengesEntries = [];
+
+    public ReadOnlyDictionary<QuestID, Quest> AllQuests { get => _AllQuests.AsReadOnly(); }
+    public Dictionary<QuestID, Quest> _AllQuests = [];
+
+    public ReadOnlyDictionary<QuestEntryID, QuestEntry> AllQuestsEntries => _AllQuestsEntries.AsReadOnly();
+    public Dictionary<QuestEntryID, QuestEntry> _AllQuestsEntries = [];
+
+    public ReadOnlyDictionary<UserID, User> AllUser => _AllUser.AsReadOnly();
+    public Dictionary<UserID, User> _AllUser = [];
+
+    public new bool IsConnected => CurrentUser != null;
+    public new void LogOut() { CurrentUser = null; }
+
+    public new bool LogIn(string email, string mdp) { "get the user id can connect to it".Panic(); return true; }
+    public new bool LogIn(UserID id, string mdp) 
+    {
+        // Todo : check mdp / password, and retrive user information
+        return LoggedAs(new User(id));
+    }
+
+    private bool LoggedAs(User user)
+    {
+        CurrentUser = user;
+        return true;
+    }
+
+    //public bool LogInAsAdmin() => 
 
     public void LoadExample() 
     {
@@ -50,9 +79,11 @@ public class PlatyApp : PlatyAppComponent
             ]
         );
 
+        LoggedAs(User.TestDefaultAdmin);
         var c = Challenge.Daily([run, push_up]);
-        AddChallenge(c);
-        App.DailyChallenge = c;
+        c.ServerUpload();
+        //AddChallenge(c);
+        //App.DailyChallenge = c;
     }
 
     public void Update() 
@@ -62,7 +93,7 @@ public class PlatyApp : PlatyAppComponent
 
         if (old_time.DayOfWeek != CurrentTime.DayOfWeek) 
         {
-        
+            
         }
     }
 
@@ -88,7 +119,17 @@ public class PlatyAppComponent
     [JsonIgnore]
     public Challenge DailyChallenge => App.DailyChallenge;
 
-    public Challenge? ObserveChallenge(ChallengeID challengeID) => App.AllChallenges.GetOrNull(challengeID);
+    [JsonIgnore]
+    public bool IsConnected => App.IsConnected;
+    public void LogOut() => App.LogOut();
+
+    public bool LogIn(string email, string mdp) => App.LogIn(email, mdp);
+    public bool LogIn(UserID id, string mdp) => App.LogIn(id, mdp);
+
+
+    // Challenge
+    //public Challenge? ObserveChallenge(ChallengeID challengeID) => App.AllChallenges.GetOrNull(challengeID);
+    /*
     public ChallengeID AddChallenge(Challenge challenge)
     {
         if (challenge.ID == ChallengeID.Empty)
@@ -102,10 +143,16 @@ public class PlatyAppComponent
             AddQuest(q);
         }
         return challenge.ID;
+    }*/
+
+    /*
+    public ChallengeEntry? ObserveChallengeEntry(ChallengeEntryID challengeEntryID) => App.AllChallengesEntries.GetOrNull(challengeEntryID);
+    public QuestEntryID AddChallengeEntry(ChallengeEntry e) 
+    { 
+        
     }
 
-    public ChallengeEntry? ObserveChallengeEntry(ChallengeEntryID challengeEntryID) => App.AllChallengesEntries.GetOrNull(challengeEntryID);
-
+    // Quest
     public Quest? ObserveQuest(QuestID questID) => App.AllQuests.GetOrNull(questID);
     public QuestID AddQuest(Quest quest) 
     {
@@ -117,7 +164,8 @@ public class PlatyAppComponent
         return quest.ID;
     }
 
+    // QuestEntry
     public QuestEntry? ObserveQuestEntry(QuestEntryID questEntryID) => App.AllQuestsEntries.GetOrNull(questEntryID);
-
+    */
     public PlatyAppComponent() { }
 }

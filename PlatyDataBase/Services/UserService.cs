@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlatyDataBase.Entities;
+using PlatyPulseAPI;
 
 namespace PlatyDataBase.Services
 {
@@ -23,7 +24,7 @@ namespace PlatyDataBase.Services
             return await _context.Users.ToListAsync();
         }*/
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
         }

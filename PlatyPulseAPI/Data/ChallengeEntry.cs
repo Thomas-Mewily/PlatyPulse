@@ -7,15 +7,15 @@ namespace PlatyPulseAPI.Data;
 /// </summary>
 public class ChallengeEntry : IdentifiableData
 {
-    public User User { get; set; } = User.Default;
+    public UserID UserID { get; set; } = UserID.Empty;
     public List<QuestEntry> Quest { get; set; } = [];
 
     public ChallengeEntry() { }
-    public ChallengeEntry(User user, List<QuestEntry> quests_entries) : this(ChallengeID.NewGuid(), user, quests_entries) { }
-    public ChallengeEntry(ChallengeID id, User user, List<QuestEntry> quest_entries)
+    public ChallengeEntry(UserID user_id, List<QuestEntry> quests_entries) : this(ChallengeID.NewGuid(), user_id, quests_entries) { }
+    public ChallengeEntry(ChallengeID id, UserID user_id, List<QuestEntry> quest_entries)
     {
         ID = id;
-        User = user;
+        UserID = user_id;
         Quest = quest_entries;
     }
 }

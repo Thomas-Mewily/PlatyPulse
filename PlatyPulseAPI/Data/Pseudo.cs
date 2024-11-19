@@ -10,7 +10,7 @@ public static class PseudoExtension
     public static bool PseudoIsValid(this string name) => Pseudo.IsValid(name);
 }
 
-public record Pseudo
+public class Pseudo
 {
     public string Name { get; set; }
 
@@ -36,3 +36,4 @@ public record Pseudo
     public static bool IsValid(string name) => name.Length <= 16 && name.All(c => AllowedChar.Contains(c));
     public override string ToString() => Name;
 }
+

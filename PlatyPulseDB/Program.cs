@@ -13,13 +13,13 @@ internal class Program
         var db_ctx = new MyDatabaseContext();
 
         db_ctx.Database.EnsureCreated();
-        //db_ctx.Add(new User(new Pseudo("17h21"), DateTime.Now, DateTime.Now, 100.XP()));
+        //db_ctx.Add(new User(new Pseudo("Mewily"), Role.Admin, DateTime.Now, DateTime.Now, 100.XP()));
         db_ctx.SaveChanges();
 
-        foreach(var i in db_ctx.Set<IdentifiableData>())
+        foreach (var i in db_ctx.Set<IdentifiableData>())
         {
             Console.WriteLine(i);
-        } 
+        }
     }
 }
 
