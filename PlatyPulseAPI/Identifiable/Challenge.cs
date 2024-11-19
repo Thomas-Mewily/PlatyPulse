@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI.Data;
 
@@ -9,7 +10,7 @@ public enum ChallengePeriod
     Futur,
 }
 
-public class Challenge : IdentifiableData
+public class Challenge : IdentifiableOwnedByData
 {
     /// ================= Fields =========
 
@@ -22,7 +23,7 @@ public class Challenge : IdentifiableData
     public DateTime End => Begin + Duration;
     public TimeSpan TimeRemaning => End - CurrentTime;
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     ChallengePeriod TimePeriod
     {
         get
@@ -34,11 +35,11 @@ public class Challenge : IdentifiableData
         }
     }
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsActive => CurrentTime >= Begin && CurrentTime < End;
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsPast => End < CurrentTime;
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsFutur => Begin >= CurrentTime;
 
     public Challenge() { }

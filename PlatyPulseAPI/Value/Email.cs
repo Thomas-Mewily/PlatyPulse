@@ -1,5 +1,6 @@
 ﻿using PlatyPulseAPI.Data;
 using System.Collections;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
 using System.Net.Mail;
 using System.Text.Json.Serialization;
@@ -21,7 +22,7 @@ public record Email
     public Email() { Address = ""; }
     public Email(string address) { Address = address; }
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsValid 
     { 
         get 

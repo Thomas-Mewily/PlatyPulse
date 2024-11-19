@@ -1,7 +1,7 @@
 ﻿using PlatyPulseAPI.Value;
 namespace PlatyPulseAPI.Data;
 
-public abstract class Owned<T> : IdentifiableData where T : new()
+public abstract class Owned<T> : IdentifiableOwnedByData where T : new()
 {
     public T Value { get; set; } = new();
 

@@ -5,7 +5,7 @@ namespace PlatyPulseAPI.Data;
 /// <summary>
 /// A participation for a person in a challenge
 /// </summary>
-public class ChallengeEntry : IdentifiableData
+public class ChallengeEntry : IdentifiableOwnedByData
 {
     public UserID UserID { get; set; } = UserID.Empty;
     public List<QuestEntry> Quest { get; set; } = [];

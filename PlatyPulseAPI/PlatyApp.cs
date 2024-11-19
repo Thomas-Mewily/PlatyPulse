@@ -13,6 +13,8 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using PlatyPulseAPI.Data;
 using System.Collections.ObjectModel;
+using PlatyPulseAPI.Value;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PlatyPulseAPI;
 
@@ -106,18 +108,19 @@ public class PlatyApp : PlatyAppComponent
 /// </summary>
 public class PlatyAppComponent
 {
-    [JsonIgnore]
+
 #pragma warning disable CA1822 // Marquer les membres comme étant static
+    [NotMapped] [JsonIgnore]
     public PlatyApp App => PlatyApp.Instance;
 #pragma warning restore CA1822 // Marquer les membres comme étant static
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public DateTime CurrentTime => App.CurrentTime;
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public User? CurrentUser => App.CurrentUser;
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public Challenge DailyChallenge => App.DailyChallenge;
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsConnected => App.IsConnected;
     public void LogOut() => App.LogOut();
 

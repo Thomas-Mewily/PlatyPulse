@@ -1,5 +1,6 @@
 ﻿using PlatyPulseAPI.Data;
 using System.Collections;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
 using System.Text.Json.Serialization;
 
@@ -26,7 +27,7 @@ public record Pseudo
     public Pseudo() : this(DefaultPseudo) { }
     public Pseudo(string name) { Name = name; }
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsValid => Name.Length <= 16 && Name.All(AllowedChar.Contains);
     public override string ToString() => Name;
 }

@@ -5,7 +5,7 @@ namespace PlatyPulseAPI.Data;
 /// <summary>
 /// A participation for a person in an objectif
 /// </summary>
-public class QuestEntry : IdentifiableData
+public class QuestEntry : IdentifiableOwnedByData
 {
     public UserID  UserID  { get; set; }
     public Score   Score   { get; set; }

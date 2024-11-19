@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using PlatyPulseAPI.Value;
 namespace PlatyPulseAPI.Data;
 
 public enum QuestKind
@@ -10,16 +12,16 @@ public enum QuestKind
 /// <summary>
 /// Description of a Quest
 /// </summary>
-public class Quest : IdentifiableData
+public class Quest : IdentifiableOwnedByData
 {
     public QuestKind Kind { get; set; }
     public List<Rank> Rank { get; set; }
     public TimeSpan? MaxTime { get; set; }
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public string Description => Kind.ToString();
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public string KindImgPath
     {
         get

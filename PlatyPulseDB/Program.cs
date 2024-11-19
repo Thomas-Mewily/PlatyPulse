@@ -1,72 +1,62 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PlatyPulseAPI;
-using PlatyPulseAPI.Data;
-using PlatyPulseAPI.Value;
-using System.Collections;
-using System.Collections.Generic;
 
-namespace PlatyPulseDB;
+using Microsoft.EntityFrameworkCore;
 
-public class User : IdentifiableData
+namespace PlatyPulseWebAPI
 {
-    public string Username { get; set; }
-    public string HashedPassword { get; set; }
-    public string Salt { get; set; }
-
-    public User(string username, string hashedPassword, string salt = "perdu_au_jeu")
+    public class Program
     {
-        Username = username;
-        HashedPassword = hashedPassword;
-        Salt = salt;
-    }
-}
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-public class DataBaseCtx : DbContext
-{
-    public DbSet<User> User { get; set; }
-    public DbSet<Challenge> Challenge { get; set; }
-    public DbSet<ChallengeEntry> ChallengeEntry { get; set; }
-    public DbSet<Quest> Quest { get; set; }
-    public DbSet<QuestEntry> QuestEntry { get; set; }
-    public DbSet<OwnedEmail> OwnedEmail { get; set; }
-    public DbSet<OwnedPseudo> OwnedPseudo { get; set; }
+            // Add services to the container.
 
-    public DataBaseCtx() 
-    {
-        
-    }
+            builder.Services.AddControllers();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite("Data Source=PlatyPulse.db");
-    }
+            builder.Services.AddDbContext<DataBaseCtx>(options => options.UseSqlite("Data Source=PlatyPulse.db"));
 
-    private EntityTypeBuilder<T> AddTable<T>(ModelBuilder modelBuilder) where T : IdentifiableData 
-    {
-        modelBuilder.Entity<T>().HasKey(s => s.ID);
-        return modelBuilder.Entity<T>();
-    }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // Table
-        AddTable<User>(modelBuilder);
 
-        AddTable<OwnedEmail>(modelBuilder);
-        AddTable<OwnedPseudo>(modelBuilder);
 
-        AddTable<Challenge>(modelBuilder);
-        AddTable<ChallengeEntry>(modelBuilder);
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
-        AddTable<Quest>(modelBuilder).OwnsOne(q => q.Rank);
-        AddTable<QuestEntry>(modelBuilder);
 
-        // Value like
-        modelBuilder.Owned<Pseudo>();
-        modelBuilder.Owned<Email>();
-        modelBuilder.Owned<Score>();
-        modelBuilder.Owned<XP>();
-        modelBuilder.Owned<List<Rank>>();
+            //builder.Services.AddDb
+
+            var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseCtx>();
+                if (dbContext.Database.EnsureCreated())
+                {
+                    Console.WriteLine("Database was not found and has been created.");
+                }
+                else
+                {
+                    Console.WriteLine("Database already exists.");
+                }
+            }
+
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthorization();
+
+
+            app.MapControllers();
+
+            app.Run();
+
+        }
     }
 }

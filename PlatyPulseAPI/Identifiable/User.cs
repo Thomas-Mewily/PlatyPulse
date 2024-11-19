@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using PlatyPulseAPI.Value;
 
 namespace PlatyPulseAPI.Data;
@@ -9,14 +10,14 @@ public enum Role
     Admin,
 }
 
-public class User : IdentifiableData
+public class User : IdentifiableOwnedByData
 {
     public OwnedPseudo Pseudo { get; set; } = new();
     public OwnedEmail  Email  { get; set; } = new();
-
+    
     public Role Role { get; set; } = Role.Consumer;
 
-    [JsonIgnore]
+    [NotMapped] [JsonIgnore]
     public bool IsAdmin => Role == Role.Admin;
 
     public DateTime CreationDate { get; set; } = DateTime.Now;
