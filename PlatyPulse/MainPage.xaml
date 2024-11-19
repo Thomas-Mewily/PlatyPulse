@@ -6,8 +6,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="5*" />
-            <RowDefinition Height="90*" />
+            <RowDefinition Height="25*" />
+            <RowDefinition Height="80*" />
             <RowDefinition Height="5*" />
         </Grid.RowDefinitions>
 
@@ -18,27 +18,36 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- Icône Profile (gauche) -->
-            <Image Source="profile_icon.png" Grid.Column="0" WidthRequest="40" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Start" />
+            <Grid Grid.Column="0">
 
-            <!-- Logo de l'application (centre) avec taille personnalisée -->
-            <Image
-                x:Name="ClickableImage"
-                Source="platypulse.png"
-                WidthRequest="240"
-                HeightRequest="240"
-                Aspect="AspectFit"
-                HorizontalOptions="Center"
-                VerticalOptions="Start"
-                SemanticProperties.Description="Platypulse Logo"
-                Grid.Column="1">
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnImageTapped" />
-                </Image.GestureRecognizers>
-            </Image>
+                <Image Source="profile_icon.png" WidthRequest="40" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Start" AutomationId="Profile">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnImageTapped" />
+                    </Image.GestureRecognizers>
+                </Image>
 
-            <!-- Icône Amis (droite) -->
-            <Image Source="friend_icon.png" Grid.Column="2" WidthRequest="40" HeightRequest="40" HorizontalOptions="End" VerticalOptions="Start" />
+            </Grid>
+
+            <Grid Grid.Column="1">
+
+                <Image
+                    Source="platypulse.png"
+                    WidthRequest="240"
+                    HeightRequest="240"
+                    HorizontalOptions="Center">
+                </Image>
+
+            </Grid>
+
+            <Grid Grid.Column="2">
+
+                <Image Source="friend_icon.png" Grid.Column="2" WidthRequest="40" HeightRequest="40" HorizontalOptions="End" VerticalOptions="Start"  AutomationId="Friends">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnImageTapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+
+            </Grid>
         </Grid>
 
         <Grid Grid.Row="1" Margin="100,25,100,25">
@@ -96,10 +105,29 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image Source="house_filled_icon.png" Grid.Column="0"/>
-            <Image Source="gym_nfilled_icon.png" Grid.Column="1"/>
-            <Image Source="rank_nfilled_icon.png" Grid.Column="2"/>
-            <Image Source="stat_nfilled_icon.png" Grid.Column="3"/>
+            <Image Source="house_filled_icon.png" Grid.Column="0" AutomationId="HomePage">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Image Source="gym_nfilled_icon.png" Grid.Column="1" AutomationId="Challenges">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Image Source="rank_nfilled_icon.png" Grid.Column="2" AutomationId="Rank">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Image Source="stat_nfilled_icon.png" Grid.Column="3" AutomationId="Stats">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
         </Grid>
     </Grid>
 

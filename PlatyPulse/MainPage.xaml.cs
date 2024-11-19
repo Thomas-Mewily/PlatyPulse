@@ -35,16 +35,30 @@ public partial class MainPage : ContentPage
 
     private async void OnImageTapped(object sender, EventArgs e)
     {
-        imageClickCount++;
-        await ClickableImage.ScaleTo(1.2, 100); // 100 ms pour l'agrandissement
+        var image = (Image)sender;
+        var targetPage = image.AutomationId;
 
-        await ClickableImage.ScaleTo(1.0, 100); // 100 ms pour le rétrécissement
-
-        if (imageClickCount >= 12 && !changedImaged)
+        switch (targetPage)
         {
-            ClickableImage.Source = "platypulse_hiden.png";
-            imageClickCount = 0;
-            changedImaged = true;
+            case "Profile":
+                await Navigation.PushAsync(new ProfilePage());
+                break;
+            case "Friends":
+                await Navigation.PushAsync(new FriendPage());
+                break;
+            case "Challenges":
+                await Navigation.PushAsync(new ChallengeHisto());
+                break;
+            case "Rank":
+                await Navigation.PushAsync(new RankPage());
+                break;
+            case "Stats":
+                await Navigation.PushAsync(new StatPage());
+                break;
+            case "HomePage":
+                break;
+            default:
+                break;
         }
     }
 
