@@ -1,4 +1,6 @@
-﻿namespace PlatyPulseAPI.Data;
+﻿using PlatyPulseAPI.Value;
+
+namespace PlatyPulseAPI.Data;
 
 public record Rank(Score ScoreToReach, XP Reward)
 {

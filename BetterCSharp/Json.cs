@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
 
-namespace PlatyPulseAPI;
+namespace BetterCSharp;
 
 public static class Json
 {

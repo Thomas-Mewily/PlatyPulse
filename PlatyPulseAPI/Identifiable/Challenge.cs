@@ -2,10 +2,15 @@
 
 namespace PlatyPulseAPI.Data;
 
+public enum ChallengePeriod
+{
+    Past,
+    Active,
+    Futur,
+}
+
 public class Challenge : IdentifiableData
 {
-    public static Challenge Default => new();
-
     /// ================= Fields =========
 
     public DateTime Begin { get; set; } = DateTime.Now;

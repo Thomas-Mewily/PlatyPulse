@@ -1,4 +1,4 @@
-﻿namespace PlatyPulseAPI.Data;
+﻿namespace PlatyPulseAPI.Value;
 
 public record XP(int Value)
 {

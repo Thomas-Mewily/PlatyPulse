@@ -6,6 +6,9 @@ global using ChallengeEntryID = System.Guid;
 global using QuestEntryID = System.Guid;
 global using Meter = double;
 global using PushUp = int;
+
+global using BetterCSharp;
+
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using PlatyPulseAPI.Data;
@@ -20,7 +23,7 @@ public class PlatyApp : PlatyAppComponent
     public new DateTime CurrentTime { get; private set; } = DateTime.Now;
 
     public new User? CurrentUser { get; private set; }
-    public new Challenge DailyChallenge { get; private set; } = Challenge.Default;
+    public new Challenge DailyChallenge { get; private set; } = new();
 
     public ReadOnlyDictionary<ChallengeID, Challenge> AllChallenges => _AllChallenges.AsReadOnly();
     public Dictionary<ChallengeID, Challenge> _AllChallenges = [];
@@ -95,11 +98,6 @@ public class PlatyApp : PlatyAppComponent
         {
             
         }
-    }
-
-    private Challenge GetTodayDailyChallenge() 
-    {
-        return Challenge.Default;
     }
 }
 

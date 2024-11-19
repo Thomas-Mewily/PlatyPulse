@@ -1,4 +1,6 @@
 ﻿namespace PlatyPulseAPITest;
+
+using BetterCSharp;
 using PlatyPulseAPI;
 using PlatyPulseAPI.Data;
 
@@ -23,6 +25,5 @@ public class Program : PlatyAppComponent
         var from_json = Json.FromJson<Challenge>(json);
         Console.WriteLine(from_json);
         Console.WriteLine();
-
     }
 }

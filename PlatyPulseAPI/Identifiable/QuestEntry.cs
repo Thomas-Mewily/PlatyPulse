@@ -1,4 +1,6 @@
-﻿namespace PlatyPulseAPI.Data;
+﻿using PlatyPulseAPI.Value;
+
+namespace PlatyPulseAPI.Data;
 
 /// <summary>
 /// A participation for a person in an objectif

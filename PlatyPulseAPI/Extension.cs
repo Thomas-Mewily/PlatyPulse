@@ -1,4 +1,4 @@
-﻿using PlatyPulseAPI.Data;
+﻿using PlatyPulseAPI.Value;
 namespace PlatyPulseAPI;
 
 public static class Extension
@@ -17,21 +17,4 @@ public static class Extension
 
 
     public static XP XP(this int i) => new(i);
-
-    /// <summary>
-    /// `T? => T or crash`
-    /// 
-    /// Transform an optional value into a non optional value.
-    /// Crash if the value was null
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="t"></param>
-    /// <param name="error"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static T Unwrap<T>(this T? t, string error = "not supposed to be null")
-        => (t == null) ? throw new ArgumentNullException(error) : t!;
-
-
-    public static void Panic(this object o) => throw new Exception(o.ToString());
 }

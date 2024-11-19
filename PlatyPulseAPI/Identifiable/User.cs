@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using PlatyPulseAPI.Value;
 
 namespace PlatyPulseAPI.Data;
 
@@ -10,7 +11,9 @@ public enum Role
 
 public class User : IdentifiableData
 {
-    public Pseudo Pseudo { get; set; } = Pseudo.Default;
+    public OwnedPseudo Pseudo { get; set; } = new();
+    public OwnedEmail  Email  { get; set; } = new();
+
     public Role Role { get; set; } = Role.Consumer;
 
     [JsonIgnore]
@@ -23,9 +26,9 @@ public class User : IdentifiableData
 
     public User() { }
     public User(UserID id) : this() { ID = id; }
-    public User(Pseudo pseudo, Role role) : this(pseudo, role, DateTime.Now, DateTime.Now, 0.XP()) { }
-    public User(Pseudo pseudo, Role role, DateTime creationData, DateTime birthday, XP xP) : this(UserID.Empty, pseudo, role, creationData, birthday, xP) { }
-    public User(UserID id, Pseudo pseudo, Role role, DateTime creationData, DateTime birthday, XP xP)
+    public User(OwnedPseudo pseudo, Role role) : this(pseudo, role, DateTime.Now, DateTime.Now, 0.XP()) { }
+    public User(OwnedPseudo pseudo, Role role, DateTime creationData, DateTime birthday, XP xP) : this(UserID.Empty, pseudo, role, creationData, birthday, xP) { }
+    public User(UserID id, OwnedPseudo pseudo, Role role, DateTime creationData, DateTime birthday, XP xP)
     {
         ID = id;
         XP = xP;
@@ -36,5 +39,5 @@ public class User : IdentifiableData
 
     public override string ToString() => Pseudo + "#" + ID;
     public static User TestDefault => new();
-    public static User TestDefaultAdmin = new("admin".ToPseudo(), Role.Admin);
+    public static User TestDefaultAdmin = new("admin".ToOwnedPseudo(), Role.Admin);
 }

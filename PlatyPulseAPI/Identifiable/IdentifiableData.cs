@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Diagnostics.Metrics;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI.Data;
 
@@ -24,4 +22,6 @@ public class IdentifiableData : PlatyAppComponent
     /// </summary>
     public virtual void ServerDownload() { "todo".Panic(); }
 #pragma warning restore CA1822 // Marquer les membres comme étant static
+
+    public override string ToString() => $"{GetType().Name}#{ID}";
 }

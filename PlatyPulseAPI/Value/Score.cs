@@ -1,4 +1,4 @@
-﻿namespace PlatyPulseAPI.Data;
+﻿namespace PlatyPulseAPI.Value;
 
 public enum ScoreKind { Distance, PushUp }
 public record Score
@@ -10,7 +10,7 @@ public record Score
     private Score(double value, ScoreKind kind) { Value = value; Kind = kind; }
 
     public double AsDouble { get => Value; set => Value = value; }
-    public int AsInt { get => (int)Value; set => Value = (double)value; }
+    public int AsInt { get => (int)Value; set => Value = value; }
 
     public Meter Meter { get => AsDouble; set => AsDouble = value; }
     public Meter KiloMeter { get => Meter / 1000.0; set => Meter = value * 1000.0; }
