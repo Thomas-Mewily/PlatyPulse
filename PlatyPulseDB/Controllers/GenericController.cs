@@ -79,7 +79,7 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// Met à jour un élément
     /// </summary>
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] T item)
+    public async Task<IActionResult> Update(ID id, [FromBody] T item)
     {
         if (GetItemId(item) != id)
         {
@@ -95,13 +95,5 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// <summary>
     /// Obtient l'ID d'un élément
     /// </summary>
-    private Guid GetItemId(T item)
-    {
-        var property = typeof(T).GetProperty("ID");
-        if (property == null || property.PropertyType != typeof(Guid))
-        {
-            throw new InvalidOperationException($"Type {typeof(T).Name} does not have a valid ID property");
-        }
-        return (Guid)property.GetValue(item);
-    }
+    private ID GetItemId(T item) => item.ID;
 }
