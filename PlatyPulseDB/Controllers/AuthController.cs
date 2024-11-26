@@ -1,4 +1,5 @@
-﻿using BetterCSharp;
+﻿global using ID = System.Guid;
+using BetterCSharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -41,6 +42,11 @@ public class AuthController : ControllerBase
         if (!Db.UserNameAvailable(request.Username)) 
         {
             return BadRequest($"Username {request.Username} is already taken");
+        }
+
+        while (Db.Account.Find(acc.ID) != null) 
+        {
+            acc.GenerateNewID();
         }
 
         Db.Add(acc);

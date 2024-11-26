@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BetterCSharp\BetterCSharp.csproj" />
     <ProjectReference Include="..\PlatyPulseAPI\PlatyPulseAPI.csproj" />
   </ItemGroup>
 
