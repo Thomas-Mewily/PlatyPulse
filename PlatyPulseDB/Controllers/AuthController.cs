@@ -48,18 +48,24 @@ public class AuthController : ControllerBase
         return Ok(acc);
     }
 
-    [HttpPost("login")]
-    public ActionResult<User> Login(AccountDTO request)
+    [HttpGet("login")]
+    public ActionResult<string> Login([FromQuery] AccountDTO request)
     {
-        var maybe_account = Db.Account.Find(request.Username);
-        if (maybe_account != null) { return BadRequest("Account not found"); }
-        var account = maybe_account.Unwrap();
+        var account = Db.Account.FirstOrDefault(a => a.Username == request.Username);
+        if (account == null)
+        {
+            return BadRequest("Account not found");
+        }
 
-        if (BCrypt.Net.BCrypt.Verify(request.Password, account.PasswordHashed)) { return BadRequest("Wrong password"); }
+        if (!BCrypt.Net.BCrypt.Verify(request.Password + "LeSelJaiPerduAuJeu", account.PasswordHashed))
+        {
+            return BadRequest("Wrong password");
+        }
 
         string token = CreateToken(account);
         return Ok(token);
     }
+
 
     private string CreateToken(Account acc) 
     {
