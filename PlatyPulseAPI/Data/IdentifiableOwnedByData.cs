@@ -9,7 +9,8 @@ public class IdentifiableData : PlatyAppComponent
 
     //public UserID OwnedByUser {  get => UserID[; set; }
 
-    public void GenerateNewID()  { ID = Guid.NewGuid(); }
+    public void GenerateNewID() { while (ID == ID.Empty) { ID = Guid.NewGuid(); } }
+         
 
     /// <summary>
     /// Upload the data to the server
@@ -21,6 +22,14 @@ public class IdentifiableData : PlatyAppComponent
     public virtual void ServerDownload() { "todo".Panic(); }
 
     public override string ToString() => $"{GetType().Name}#{ID}";
+
+    [NotMapped]
+    [JsonIgnore]
+    public bool IsPublicData => !IsPrivateData;
+
+    [NotMapped]
+    [JsonIgnore]
+    public virtual bool IsPrivateData => false;
 }
 
 

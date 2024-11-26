@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using PlatyPulseAPI.Data;
 using PlatyPulseAPI.Value;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -29,11 +30,11 @@ public class PlatyController : ControllerBase
         return Config.GetSection(token_path).Value.Unwrap(token_path);
     }
 
-    protected string CreateToken(Account acc)
+    protected string CreateToken(User acc)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, acc.Username)
+            new Claim(ClaimTypes.Email, acc.Email.Address)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TopSecretToken()));
@@ -45,7 +46,13 @@ public class PlatyController : ControllerBase
         return jwt;
     }
 
-    protected string ValidateTokenAndGetUsername(string token)
+    //Db.Account.FirstOrDefault(a => a.Email == request.Email);
+    protected User GetAccount(Email email) => Db.Account.FirstOrDefault(a => a.Email == email).Unwrap("No Account associated with " + email);
+    protected User GetAccount(string email) => GetAccount(email.ToEmail());
+    // Todo : not opti
+    protected User GetAccount(ID id) => Db.Account.FirstOrDefault(a => a.ID == id).Unwrap("Can't find user " + id);
+
+    protected Email ValidateTokenAndGetEmail(string token)
     {
         if (string.IsNullOrEmpty(token))
         {
@@ -66,12 +73,12 @@ public class PlatyController : ControllerBase
         }, out SecurityToken validatedToken);
 
         // Extract claims
-        var username = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-        if (username == null)
+        if (email == null)
         {
             throw new UnauthorizedAccessException("User ID not found in token.");
         }
-        return username;
+        return email.ToEmail();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PlatyPulseAPI.Value;
+using System.Text.RegularExpressions;
 namespace PlatyPulseAPI;
 
 public static class Extension
@@ -17,4 +18,17 @@ public static class Extension
 
 
     public static XP XP(this int i) => new(i);
+
+
+    private static readonly Regex PasswordRegex = new(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$", RegexOptions.Compiled);
+
+    public static bool IsPasswordRobust(this string password)
+    {
+        return PasswordRegex.IsMatch(password);
+    }
+    public static string CheckPasswordRobust(this string password) 
+    { 
+        if (!password.IsPasswordRobust()) { throw new Exception("Password must contain at least eight characters, at least one number and both lower and uppercase letters and special characters"); }
+        return password;
+    }
 }

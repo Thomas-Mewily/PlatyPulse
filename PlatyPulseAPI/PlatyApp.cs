@@ -2,6 +2,8 @@
 global using ChallengeID = System.Guid;
 global using QuestID = System.Guid;
 global using UserID = System.Guid;
+global using PseudoID = System.Guid;
+global using EmailID = System.Guid;
 global using ChallengeEntryID = System.Guid;
 global using QuestEntryID = System.Guid;
 global using Meter = double;
@@ -11,8 +13,8 @@ global using BetterCSharp;
 
 using System.Diagnostics;
 using System.Text.Json.Serialization;
-using PlatyPulseAPI.Data;
 using System.Collections.ObjectModel;
+using PlatyPulseAPI.Data;
 using PlatyPulseAPI.Value;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -43,13 +45,15 @@ public class PlatyApp : PlatyAppComponent
     public Dictionary<UserID, User> _AllUser = [];
 
     public new bool IsConnected => CurrentUser != null;
+
     public new void LogOut() { CurrentUser = null; }
 
-    public new bool LogIn(string email, string mdp) { "get the user id can connect to it".Panic(); return true; }
-    public new bool LogIn(UserID id, string mdp) 
+    public new bool LogIn(string email, string mdp) 
     {
+        if (IsConnected) { LogOut(); }
+
         // Todo : check mdp / password, and retrive user information
-        return LoggedAs(new User(id));
+        return LoggedAs(User.TestDefault);
     }
 
     private bool LoggedAs(User user)
@@ -125,7 +129,6 @@ public class PlatyAppComponent
     public void LogOut() => App.LogOut();
 
     public bool LogIn(string email, string mdp) => App.LogIn(email, mdp);
-    public bool LogIn(UserID id, string mdp) => App.LogIn(id, mdp);
 
 
     // Challenge

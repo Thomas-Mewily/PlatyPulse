@@ -1,8 +1,10 @@
 ﻿using BetterCSharp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PlatyPulseAPI.Data;
 using PlatyPulseAPI.Value;
+using System.Collections.Generic;
 
 namespace PlatyPulseWebAPI;
 
@@ -10,24 +12,22 @@ public class DataBaseCtx : DbContext
 {
     //public static DataBaseCtx Instance { get; } = new DataBaseCtx();
 
-    public DbSet<Account> Account { get; set; }
+    public DbSet<User> Account { get; set; } = null!;
 
 
-    public DbSet<User> User { get; set; }
+    public DbSet<User> User { get; set; } = null!;
 
-    public DbSet<OwnedEmail> OwnedEmail { get; set; }
-    public DbSet<OwnedPseudo> OwnedPseudo { get; set; }
+    public DbSet<Challenge> Challenge { get; set; } = null!;
+    public DbSet<ChallengeEntry> ChallengeEntry { get; set; } = null!;
 
-    public DbSet<Challenge> Challenge { get; set; }
-    public DbSet<ChallengeEntry> ChallengeEntry { get; set; }
+    public DbSet<Quest> Quest { get; set; } = null!;
+    public DbSet<QuestEntry> QuestEntry { get; set; } = null!;
 
-    public DbSet<Quest> Quest { get; set; }
-    public DbSet<QuestEntry> QuestEntry { get; set; }
-
-    public Account? AccountFromUserName(string username) { return Account.FirstOrDefault(e => e.Username == username); }
-    public bool UserNameAvailable(string username) { return AccountFromUserName(username) == null; }
+    public User? AccountFromEmail(Email email) { return Account.FirstOrDefault(e => e.Email == email); }
+    public bool EmailAvailable(Email email) { return AccountFromEmail(email) == null; }
 
     public DataBaseCtx(DbContextOptions<DataBaseCtx> options) : base(options) { }
+
     //public DataBaseCtx() { }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -46,13 +46,26 @@ public class DataBaseCtx : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Table
-        AddTable<Account>(modelBuilder).HasIndex(e => e.Username).IsUnique();
+        var user = AddTable<User>(modelBuilder).HasIndex(e => e.Email).IsUnique();
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.Email)
+                  .HasConversion(
+                      v => v.Address,          
+                      v => v.ToEmail());
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.Pseudo)
+                  .HasConversion(
+                      v => v.Name,
+                      v => v.ToPseudo());
+        });
+
 
         AddTable<User>(modelBuilder);
-
-        AddTable<OwnedEmail>(modelBuilder);
-        AddTable<OwnedPseudo>(modelBuilder);
 
         AddTable<Challenge>(modelBuilder);
         AddTable<ChallengeEntry>(modelBuilder);

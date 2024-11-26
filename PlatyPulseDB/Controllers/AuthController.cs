@@ -3,6 +3,7 @@ using BetterCSharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PlatyPulseAPI;
 using PlatyPulseAPI.Data;
 using PlatyPulseAPI.Value;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,49 +21,56 @@ public class AuthController : PlatyController
     public AuthController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 
     [HttpPost("register")]
-    public ActionResult<Account> Register(AccountDTO request) 
+    public ActionResult<User> Register(UserRegister request) 
     {
-        // Todo hash the password here
         // Todo : make sure the username is valid
         // Todo : make sure the password is also valid and secure
 
-        var acc = new Account() 
-        { 
-            Username = request.Username,
-            PasswordHashed = BCrypt.Net.BCrypt.HashPassword(request.Password + SEL)
-        };
-
-        if (!Db.UserNameAvailable(request.Username)) 
+        try 
         {
-            return BadRequest($"Username {request.Username} is already taken");
-        }
+            var password = request.Password.CheckPasswordRobust();
+            var pseudo = request.Pseudo.ToPseudo().Check();
+            var email = request.Email.ToEmail().Check();
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password + SEL);
 
-        while (Db.Account.Find(acc.ID) != null) 
+            if (!Db.EmailAvailable(request.Email.ToEmail()))
+            {
+                return BadRequest($"Username {request.Email} is already taken");
+            }
+
+            var user = new User(pseudo, email, passwordHashed, Role.Consumer, DateTime.Now, 0.XP());
+
+            // Todo : what if the GUID already exist ? Don't erase an existing account
+            // same for every add, maybe overload the add func
+            Db.Add(user);
+            Db.SaveChanges();
+            return Ok(user);
+        }
+        catch (Exception ex)
         {
-            acc.GenerateNewID();
+            return BadRequest(ex.Message);
         }
-
-        Db.Add(acc);
-        Db.SaveChanges();
-        return Ok(acc);
     }
 
     [HttpGet("login")]
-    public ActionResult<string> Login([FromQuery] AccountDTO request)
+    public ActionResult<string> Login([FromQuery] UserLogin request)
     {
-        var account = Db.Account.FirstOrDefault(a => a.Username == request.Username);
-        if (account == null)
+        try 
         {
-            return BadRequest("Account not found");
-        }
+            var account = GetAccount(request.Email);
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, account.PasswordHashed))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, account.PasswordHashed))
+            {
+                return BadRequest("Wrong password");
+            }
+
+            string token = CreateToken(account);
+            return Ok(token);
+        }
+        catch (Exception e)
         {
-            return BadRequest("Wrong password");
+            return BadRequest(e.Message);
         }
-
-        string token = CreateToken(account);
-        return Ok(token);
     }
 
     
@@ -71,7 +79,7 @@ public class AuthController : PlatyController
     {
         try 
         {
-            return Ok(ValidateTokenAndGetUsername(token));
+            return Ok(ValidateTokenAndGetEmail(token));
         }
         catch (Exception e)
         {
@@ -85,7 +93,7 @@ public class AuthController : PlatyController
     {
         try 
         {
-            ValidateTokenAndGetUsername(token);
+            ValidateTokenAndGetEmail(token);
             return Ok("trop vieux (todo)");
         }
         catch (Exception ex)
@@ -94,8 +102,3 @@ public class AuthController : PlatyController
         }
     }
 }
-
-/*
-username: thomas
-mdp: sami
- */
