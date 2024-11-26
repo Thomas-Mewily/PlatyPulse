@@ -1,4 +1,5 @@
-﻿using BetterCSharp;
+﻿global using ID = System.Guid;
+using BetterCSharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,16 +15,9 @@ namespace PlatyPulseWebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController : PlatyController
 {
-    private readonly DataBaseCtx Db;
-    private readonly IConfiguration Config;
-
-    public AuthController(DataBaseCtx db, IConfiguration config) 
-    {
-        Db = db;
-        Config = config;
-    }
+    public AuthController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 
     [HttpPost("register")]
     public ActionResult<Account> Register(AccountDTO request) 
@@ -35,7 +29,7 @@ public class AuthController : ControllerBase
         var acc = new Account() 
         { 
             Username = request.Username,
-            PasswordHashed = BCrypt.Net.BCrypt.HashPassword(request.Password + "LeSelJaiPerduAuJeu")
+            PasswordHashed = BCrypt.Net.BCrypt.HashPassword(request.Password + SEL)
         };
 
         if (!Db.UserNameAvailable(request.Username)) 
@@ -43,38 +37,65 @@ public class AuthController : ControllerBase
             return BadRequest($"Username {request.Username} is already taken");
         }
 
+        while (Db.Account.Find(acc.ID) != null) 
+        {
+            acc.GenerateNewID();
+        }
+
         Db.Add(acc);
         Db.SaveChanges();
         return Ok(acc);
     }
 
-    [HttpPost("login")]
-    public ActionResult<User> Login(AccountDTO request)
+    [HttpGet("login")]
+    public ActionResult<string> Login([FromQuery] AccountDTO request)
     {
-        var maybe_account = Db.Account.Find(request.Username);
-        if (maybe_account != null) { return BadRequest("Account not found"); }
-        var account = maybe_account.Unwrap();
+        var account = Db.Account.FirstOrDefault(a => a.Username == request.Username);
+        if (account == null)
+        {
+            return BadRequest("Account not found");
+        }
 
-        if (BCrypt.Net.BCrypt.Verify(request.Password, account.PasswordHashed)) { return BadRequest("Wrong password"); }
+        if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, account.PasswordHashed))
+        {
+            return BadRequest("Wrong password");
+        }
 
         string token = CreateToken(account);
         return Ok(token);
     }
 
-    private string CreateToken(Account acc) 
+    
+    [HttpGet("validate-token")]
+    public IActionResult ValidateToken([FromQuery] string token)
     {
-        var claims = new List<Claim>
+        try 
         {
-            new Claim(ClaimTypes.Name, acc.Username)
-        };
+            return Ok(ValidateTokenAndGetUsername(token));
+        }
+        catch (Exception e)
+        {
+            return Unauthorized(e.Message);
+        }
+    }
 
-        var token_path = "AppSettings:Token";
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config.GetSection(token_path).Value.Unwrap(token_path)));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(7), signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwt;
+    
+    [HttpGet("get_age")]
+    public ActionResult<string> GetAge([FromQuery] string token)
+    {
+        try 
+        {
+            ValidateTokenAndGetUsername(token);
+            return Ok("trop vieux (todo)");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
+
+/*
+username: thomas
+mdp: sami
+ */

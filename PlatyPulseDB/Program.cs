@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 
 namespace PlatyPulseWebAPI
@@ -9,24 +8,33 @@ namespace PlatyPulseWebAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Ajouter les services au conteneur
 
+            // Ajoute les contrôleurs
             builder.Services.AddControllers();
 
-            builder.Services.AddDbContext<DataBaseCtx>(options => options.UseSqlite("Data Source=PlatyPulse.db"));
+            // Configuration de la base de données SQLite
+            builder.Services.AddDbContext<DataBaseCtx>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=PlatyPulse.db"));
 
-
-
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // Ajouter Swagger/OpenAPI pour la documentation de l'API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
-            //builder.Services.AddDb
+            // Configuration des CORS si nécessaire (exemple d'autorisation de toutes les origines pour les tests)
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
             var app = builder.Build();
 
+            // Initialisation de la base de données
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<DataBaseCtx>();
@@ -40,23 +48,28 @@ namespace PlatyPulseWebAPI
                 }
             }
 
-
-            // Configure the HTTP request pipeline.
+            // Configuration du pipeline HTTP
             if (app.Environment.IsDevelopment())
             {
+                // Swagger pour la documentation de l'API en mode développement
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            // Redirection HTTPS
             app.UseHttpsRedirection();
 
+            // Ajout de CORS
+            app.UseCors("AllowAll");
+
+            // Middleware d'autorisation
             app.UseAuthorization();
 
-
+            // Configuration des routes des contrôleurs
             app.MapControllers();
 
+            // Démarrage de l'application
             app.Run();
-
         }
     }
 }
