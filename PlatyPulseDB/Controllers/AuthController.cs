@@ -1,4 +1,5 @@
 ﻿global using ID = System.Guid;
+global using JWTString = System.String;
 using BetterCSharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ public class AuthController : PlatyController
     }
 
     [HttpGet("login")]
-    public ActionResult<string> Login([FromQuery] UserLogin request)
+    public ActionResult<JWTString> Login([FromQuery] UserLogin request)
     {
         try 
         {
@@ -64,7 +65,7 @@ public class AuthController : PlatyController
                 return BadRequest("Wrong password");
             }
 
-            string token = CreateToken(account);
+            JWTString token = CreateToken(account);
             return Ok(token);
         }
         catch (Exception e)
@@ -75,11 +76,11 @@ public class AuthController : PlatyController
 
     
     [HttpGet("validate-token")]
-    public IActionResult ValidateToken([FromQuery] string token)
+    public IActionResult ValidateToken([FromQuery] JWTString token)
     {
         try 
         {
-            return Ok(ValidateTokenAndGetEmail(token));
+            return Ok(CheckTokenAndGetEmail(token));
         }
         catch (Exception e)
         {
@@ -88,13 +89,13 @@ public class AuthController : PlatyController
     }
 
     
-    [HttpGet("get_age")]
-    public ActionResult<string> GetAge([FromQuery] string token)
+    [HttpGet("get_xp")]
+    public ActionResult<string> GetXP([FromQuery] JWTString token)
     {
         try 
         {
-            ValidateTokenAndGetEmail(token);
-            return Ok("trop vieux (todo)");
+            var u = CheckTokenAndGetUser(token);
+            return Ok("Tu as " + u.XP + "!");
         }
         catch (Exception ex)
         {

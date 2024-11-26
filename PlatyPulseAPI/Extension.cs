@@ -27,8 +27,9 @@ public static class Extension
         return PasswordRegex.IsMatch(password);
     }
     public static string CheckPasswordRobust(this string password) 
-    { 
-        if (!password.IsPasswordRobust()) { throw new Exception("Password must contain at least eight characters, at least one number and both lower and uppercase letters and special characters"); }
+    {
+        // Todo : clarify the message. What is a special characters :
+        if (!password.IsPasswordRobust()) { throw new Exception("Password must contain at least 8 characters, at least 1 number and both lower and uppercase letters and special characters"); }
         return password;
     }
 }

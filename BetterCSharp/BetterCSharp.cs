@@ -26,7 +26,7 @@ public static class Z
 
     public static void Todo() => "Todo".Panic();
 
-    public static T Default<T>() where T : new() => new T();
+    public static T Default<T>() where T : new() => new();
 
     /*
     public static T? FirstOrNone<T>(this IEnumerable<T> i, Func<T, bool> predicate) where T : class

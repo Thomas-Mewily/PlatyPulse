@@ -43,6 +43,7 @@ public class QuestEntriesController : GenericController<QuestEntry>
     public QuestEntriesController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
+/*
 // Si Owned ou IdentifiableOwnedByData nécessitent des contrôleurs spécifiques
 [Route("api/[controller]")]
 [ApiController]
@@ -50,3 +51,4 @@ public class OwnedsController : GenericController<Owned<IdentifiableOwnedByData>
 {
     public OwnedsController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
+*/

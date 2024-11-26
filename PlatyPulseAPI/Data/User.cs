@@ -12,7 +12,7 @@ public enum Role
 }
 
 /// <summary>
-/// The private stuff of a user
+/// Represent a person, entity that can be logged
 /// </summary>
 public class User : IdentifiableData
 {
