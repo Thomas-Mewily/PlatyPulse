@@ -86,7 +86,7 @@ public class PlatyApp : PlatyAppComponent
 
         LoggedAs(User.TestDefaultAdmin);
         var c = Challenge.Daily([run, push_up]);
-        c.ServerUpload();
+        //c.ServerUpload();
         //AddChallenge(c);
         //App.DailyChallenge = c;
     }

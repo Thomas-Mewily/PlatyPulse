@@ -1,12 +1,164 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PlatyPulse.FriendPage"
-             Title="FriendPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*" />
+            <RowDefinition Height="80*" />
+            <RowDefinition Height="5*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10,5,10,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Image Source="profile_icon.png" WidthRequest="40" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Start" AutomationId="Profile">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnImageTapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Image Source="platypulse.png" WidthRequest="240" HeightRequest="240" HorizontalOptions="Center"/>
+            </Grid>
+
+            <Grid Grid.Column="2">
+                <Image Source="friend_icon.png" WidthRequest="40" HeightRequest="40" HorizontalOptions="End" VerticalOptions="Start"  AutomationId="Friends" BackgroundColor="LightGrey">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnImageTapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+            </Grid>
+        </Grid>
+
+
+        <Grid Grid.Row="1" Margin="10">
+            <!-- Définir des lignes dans la Grid pour contrôler l'espace occupé par chaque section -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="80*" />
+            </Grid.RowDefinitions>
+
+            <Label Text="Ajouter un ami"
+               HorizontalOptions="Center"
+               VerticalOptions="Start"
+               FontSize="14"
+               TextColor="White"
+               Grid.Row="0"/>
+            
+            <!-- Le bouton ajouter un ami en haut -->
+            <ImageButton Source="add_friend_icon.png"
+                 HorizontalOptions="Center"
+                 VerticalOptions="Start"
+                 Grid.Row="1"/>
+
+            <Label Text="Liste d'amis"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Start"
+                   FontSize="14"
+                   TextColor="White"
+                   Grid.Row="2"/>
+            <!-- Assurez-vous qu'il est dans la première ligne -->
+
+            <!-- La ScrollView prend l'espace restant sous le bouton -->
+            <ScrollView VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Grid.Row="3">
+                <VerticalStackLayout Spacing="10" Padding="10">
+                    <!-- Liste des amis sous forme de Frame -->
+                    <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Nom: Mathis" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="Âge: 22 ans" FontSize="18"/>
+                            <Label Text="Ville: Vichy" FontSize="18"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Nom: Thomas1" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="Âge: 20 ans" FontSize="18"/>
+                            <Label Text="Ville: Clermont-Ferrand" FontSize="18"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Nom: Sami" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="Âge: 22 ans" FontSize="18"/>
+                            <Label Text="Ville: Aurillac" FontSize="18"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Ajouter d'autres frames si nécessaire -->
+                    <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Nom: Thomas2" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="Âge: 22 ans" FontSize="18"/>
+                            <Label Text="Ville: Clermont-Ferrand" FontSize="18"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Nom: Random1" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="Âge: 22 ans" FontSize="18"/>
+                            <Label Text="Ville: Paris" FontSize="18"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Nom: Random2" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="Âge: 22 ans" FontSize="18"/>
+                            <Label Text="Ville: Marseille" FontSize="18"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+
+
+
+        <Grid Grid.Row="2" Margin="5,5,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image Source="house_nfilled_icon.png" Grid.Column="0" AutomationId="HomePage">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Image Source="gym_nfilled_icon.png" Grid.Column="1" AutomationId="Challenges">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Image Source="rank_nfilled_icon.png" Grid.Column="2" AutomationId="Rank">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Image Source="stat_nfilled_icon.png" Grid.Column="3" AutomationId="Stats">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+        </Grid>
+    </Grid>
+
 </ContentPage>

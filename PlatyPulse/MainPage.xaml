@@ -50,7 +50,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="1" Margin="100,25,100,25">
+        <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
@@ -105,7 +105,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image Source="house_filled_icon.png" Grid.Column="0" AutomationId="HomePage">
+            <Image Source="house_nfilled_icon.png" Grid.Column="0" AutomationId="HomePage" BackgroundColor="LightGrey">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnImageTapped" />
                 </Image.GestureRecognizers>
