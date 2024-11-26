@@ -8,7 +8,7 @@ namespace PlatyPulseWebAPI.Controllers;
 [ApiController]
 public class QuestsController : GenericController<Quest>
 {
-    public QuestsController(DataBaseCtx dbContext) : base(dbContext) { }
+    public QuestsController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 // Controller pour Challenge
@@ -16,7 +16,7 @@ public class QuestsController : GenericController<Quest>
 [ApiController]
 public class ChallengesController : GenericController<Challenge>
 {
-    public ChallengesController(DataBaseCtx dbContext) : base(dbContext) { }
+    public ChallengesController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 // Controller pour User
