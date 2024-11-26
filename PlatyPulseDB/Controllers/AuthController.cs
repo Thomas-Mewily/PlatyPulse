@@ -15,18 +15,9 @@ namespace PlatyPulseWebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController : PlatyController
 {
-    private const string SEL = "LeSelJaiPerduAuJeu";
-
-    private readonly DataBaseCtx Db;
-    private readonly IConfiguration Config;
-
-    public AuthController(DataBaseCtx db, IConfiguration config) 
-    {
-        Db = db;
-        Config = config;
-    }
+    public AuthController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 
     [HttpPost("register")]
     public ActionResult<Account> Register(AccountDTO request) 
@@ -74,27 +65,37 @@ public class AuthController : ControllerBase
         return Ok(token);
     }
 
-    private string TopSecretToken() 
-    { 
-        var token_path = "AppSettings:Token";
-        return Config.GetSection(token_path).Value.Unwrap(token_path);
-    }
-
-    private string CreateToken(Account acc) 
+    
+    [HttpGet("validate-token")]
+    public IActionResult ValidateToken([FromQuery] string token)
     {
-        var claims = new List<Claim>
+        try 
         {
-            new Claim(ClaimTypes.Name, acc.Username)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TopSecretToken()));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(7), signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwt;
+            return Ok(ValidateTokenAndGetUsername(token));
+        }
+        catch (Exception e)
+        {
+            return Unauthorized(e.Message);
+        }
     }
 
-
+    
+    [HttpGet("get_age")]
+    public ActionResult<string> GetAge([FromQuery] string token)
+    {
+        try 
+        {
+            ValidateTokenAndGetUsername(token);
+            return Ok("trop vieux (todo)");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
+
+/*
+username: thomas
+mdp: sami
+ */
