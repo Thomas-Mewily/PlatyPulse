@@ -22,7 +22,7 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     [HttpGet]
     public async Task<ActionResult<IEnumerable<T>>> GetAll()
     {
-        var items = await _dbSet.ToListAsync();
+        var items = (await _dbSet.ToListAsync()).Where(s => s.IsPublicData);
         return Ok(items);
     }
 
@@ -30,13 +30,12 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// Récupère un élément spécifique par son ID
     /// </summary>
     [HttpGet("{id}")]
-    public async Task<ActionResult<T>> GetById(Guid id)
+    public async Task<ActionResult<T>> GetById(ID id)
     {
         var item = await _dbSet.FindAsync(id);
-        if (item == null)
-        {
-            return NotFound();
-        }
+        if (item == null) { return NotFound(); }
+        if (item.IsPrivateData) { return Unauthorized(); }
+
         return Ok(item);
     }
 
@@ -46,10 +45,7 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     [HttpPost]
     public async Task<ActionResult<T>> Create([FromBody] T item)
     {
-        if (item == null)
-        {
-            return BadRequest("Item cannot be null");
-        }
+        if (item == null) { return BadRequest("Item cannot be null"); }
 
         _dbSet.Add(item);
         await _dbContext.SaveChangesAsync();
@@ -61,13 +57,10 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// Supprime un élément par son ID
     /// </summary>
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(ID id)
     {
         var item = await _dbSet.FindAsync(id);
-        if (item == null)
-        {
-            return NotFound();
-        }
+        if (item == null) { return NotFound(); }
 
         _dbSet.Remove(item);
         await _dbContext.SaveChangesAsync();
@@ -81,10 +74,7 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(ID id, [FromBody] T item)
     {
-        if (GetItemId(item) != id)
-        {
-            return BadRequest("ID mismatch");
-        }
+        if (GetItemId(item) != id) { return BadRequest("ID mismatch"); }
 
         _dbSet.Update(item);
         await _dbContext.SaveChangesAsync();
