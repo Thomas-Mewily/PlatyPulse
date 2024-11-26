@@ -17,6 +17,8 @@ namespace PlatyPulseWebAPI.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private const string SEL = "LeSelJaiPerduAuJeu";
+
     private readonly DataBaseCtx Db;
     private readonly IConfiguration Config;
 
@@ -36,7 +38,7 @@ public class AuthController : ControllerBase
         var acc = new Account() 
         { 
             Username = request.Username,
-            PasswordHashed = BCrypt.Net.BCrypt.HashPassword(request.Password + "LeSelJaiPerduAuJeu")
+            PasswordHashed = BCrypt.Net.BCrypt.HashPassword(request.Password + SEL)
         };
 
         if (!Db.UserNameAvailable(request.Username)) 
@@ -63,7 +65,7 @@ public class AuthController : ControllerBase
             return BadRequest("Account not found");
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password + "LeSelJaiPerduAuJeu", account.PasswordHashed))
+        if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, account.PasswordHashed))
         {
             return BadRequest("Wrong password");
         }
@@ -72,6 +74,11 @@ public class AuthController : ControllerBase
         return Ok(token);
     }
 
+    private string TopSecretToken() 
+    { 
+        var token_path = "AppSettings:Token";
+        return Config.GetSection(token_path).Value.Unwrap(token_path);
+    }
 
     private string CreateToken(Account acc) 
     {
@@ -80,8 +87,7 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.Name, acc.Username)
         };
 
-        var token_path = "AppSettings:Token";
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config.GetSection(token_path).Value.Unwrap(token_path)));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TopSecretToken()));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(7), signingCredentials: creds);
@@ -89,4 +95,6 @@ public class AuthController : ControllerBase
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return jwt;
     }
+
+
 }
