@@ -9,6 +9,8 @@ public class IdentifiableData : PlatyAppComponent
 
     //public UserID OwnedByUser {  get => UserID[; set; }
 
+    public void GenerateNewID()  { ID = Guid.NewGuid(); }
+
     /// <summary>
     /// Upload the data to the server
     /// </summary>
