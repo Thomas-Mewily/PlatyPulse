@@ -87,10 +87,7 @@ public partial class PlatyApp : PlatyAppComponent
 {
     private static string ServerApiURL = "https://localhost:7021/";
 
-    public new void LogOut() 
-    {
-        LoggedUser.Disconnect();
-    }
+    public new void LogOut() => LoggedUser.Disconnect();
 
     private string GetUrl(string entry_point) => ServerApiURL + "api/" + entry_point;
 
@@ -105,14 +102,15 @@ public partial class PlatyApp : PlatyAppComponent
     }
     public async Task<R> DbPost<C, R>(string url, C content)
     {
-        string content_json = JsonSerializer.Serialize(content);
+        string content_json = content.ToJson();
         var web_result = _DbPostAsync(url, content_json);
         var reponse = (await web_result).Unwrap();
         string result_json = await reponse.Content.ReadAsStringAsync();
         Console.WriteLine("Post : " + result_json);
 
-        var result = JsonSerializer.Deserialize<R>(result_json);
-        return result.Unwrap();
+        var result = Json.From<R>(result_json);
+        Console.WriteLine("Post Result : " + result);
+        return result;
     }
 
     private async Task<HttpResponseMessage?> _DbGetAsync(string entry_point, JWTString token = "")
@@ -130,21 +128,25 @@ public partial class PlatyApp : PlatyAppComponent
         string result_json = await reponse.Content.ReadAsStringAsync();
         Console.WriteLine("Get : " + result_json);
 
-        var result = JsonSerializer.Deserialize<R>(result_json);
+        var result = Json.From<R>(result_json);
         return result.Unwrap();
     }
 
     public async Task<User> DbGetUserData(JWTString? token = null) => await DbGetAsync<User>("user_data", token);
+
+    private void LoggedAs(UserLogged user) 
+    { 
+        LogOut();
+        LoggedUser = user;
+    }
 
     public new async Task<bool> LogIn(Email email, string mdp) => await LogIn(new UserLogin(email.Address, mdp));
     public new async Task<bool> LogIn(UserLogin login)
     {
         try
         {
-            LogOut();
-
             login.Email.ToEmail().Check();
-            LoggedUser = await DbPost<UserLogin, UserLogged>("Auth/login", login);
+            LoggedAs(await DbPost<UserLogin, UserLogged>("Auth/login", login));
             return true;
         }
         catch (Exception)
@@ -168,8 +170,9 @@ public partial class PlatyApp : PlatyAppComponent
         register.Pseudo.ToPseudo().Check();
         register.Password.CheckPasswordRobust();
 
-        var token = await DbPost<UserRegister, JWTString>("Auth/register", register);
-        return await LogIn(token);
+        var user_logged = await DbPost<UserRegister, UserLogged>("Auth/register", register);
+        LoggedAs(user_logged);
+        return true;
     }
 
 

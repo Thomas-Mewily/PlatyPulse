@@ -9,7 +9,6 @@ namespace PlatyPulseWebAPI
         public static void Main(string[] args)
         {
             PlatyApp.InitJsonSerializerOptions();
-            var j = 10.XP().ToJson();
 
             var builder = WebApplication.CreateBuilder(args);
 

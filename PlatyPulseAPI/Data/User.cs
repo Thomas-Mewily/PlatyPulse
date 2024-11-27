@@ -22,7 +22,6 @@ public class User : IdentifiableData
     public Email  Email { get; set; } = new();
     [JsonIgnore]
     public string PasswordHashed { get; set; } = string.Empty;
-    public UserID UserID { get; set; } = UserID.NewGuid();
 
     public Role Role { get; set; } = Role.Consumer;
 
@@ -111,7 +110,7 @@ public class UserLogged
     [JsonIgnore]
     public bool IsConnected => JWT.Length > 0;
 
-    public UserLogged() { }
+    public UserLogged() { User.ID = ID.Empty; }
     public UserLogged(User user, string jwt)
     {
         User = user;
