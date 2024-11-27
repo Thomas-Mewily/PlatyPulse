@@ -21,7 +21,6 @@ public class Program : PlatyAppComponent
         Console.WriteLine(json);
         Console.WriteLine();
 
-
         var from_json = Json.FromJson<Challenge>(json);
         Console.WriteLine(from_json);
         Console.WriteLine();

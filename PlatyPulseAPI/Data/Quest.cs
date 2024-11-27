@@ -14,14 +14,26 @@ public enum QuestKind
 /// </summary>
 public class Quest : IdentifiableOwnedByData
 {
+    /// ================= Fields =========
     public QuestKind Kind { get; set; }
     public List<Rank> Rank { get; set; }
     public TimeSpan? MaxTime { get; set; }
 
-    [NotMapped] [JsonIgnore]
+    public override void ForceUpdateFrom(IdentifiableData other)
+    {
+        var q = (other as Quest).Unwrap();
+        Kind = q.Kind;
+        Rank = q.Rank;
+        MaxTime = q.MaxTime;
+    }
+
+    /// ================= Rest =========
+    [NotMapped]
+    [JsonIgnore]
     public string Description => Kind.ToString();
 
-    [NotMapped] [JsonIgnore]
+    [NotMapped]
+    [JsonIgnore]
     public string KindImgPath
     {
         get
@@ -55,5 +67,17 @@ public class Quest : IdentifiableOwnedByData
             case QuestKind.PushUp: { kind_str = "push up"; } break;
         }
         return kind_str + " (" + string.Join(", ", Rank.Select(r => r.ToString())) + ")";
+    }
+
+    public int GetRankIdx(Score score) 
+    {
+        "todo".Panic();
+        return 0;
+    }
+
+    public Score MinimumScoreToReachRankIdx(int rankIdx) 
+    {
+        "todo".Panic();
+        return 0.Meter();
     }
 }

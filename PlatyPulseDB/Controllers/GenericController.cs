@@ -72,14 +72,25 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// Met à jour un élément
     /// </summary>
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(ID id, [FromBody] T item)
+    public async Task<IActionResult> Update(ID id, JWTString token, [FromBody] T item)
     {
-        if (GetItemId(item) != id) { return BadRequest("ID mismatch"); }
+        try 
+        {
+            CheckSameID(item, id);
+            var u = CheckTokenAndGetUser(token);
 
-        _dbSet.Update(item);
-        await _dbContext.SaveChangesAsync();
+            var will_be_updated = _dbSet.Find(item.ID).Unwrap();
+            will_be_updated.UpdateFrom(item, u);
 
-        return NoContent();
+            _dbSet.Update(will_be_updated);
+            await _dbContext.SaveChangesAsync();
+            return NoContent();
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>

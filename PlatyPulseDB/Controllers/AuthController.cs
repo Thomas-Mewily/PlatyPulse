@@ -1,6 +1,4 @@
-﻿global using ID = System.Guid;
-global using JWTString = System.String;
-using BetterCSharp;
+﻿using BetterCSharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,10 +15,8 @@ namespace PlatyPulseWebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : PlatyController
+public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyController(db, config)
 {
-    public AuthController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
-
     [HttpPost("register")]
     public ActionResult<User> Register(UserRegister request) 
     {

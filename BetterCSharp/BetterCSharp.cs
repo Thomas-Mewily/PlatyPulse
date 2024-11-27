@@ -13,8 +13,8 @@ public static class Z
     /// <param name="error"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static T Unwrap<T>(this T? t, string error = "not supposed to be null")
-        => (t == null) ? throw new ArgumentNullException(error) : t!;
+    public static T Unwrap<T>(this T? t, string? error = null)
+        => (t == null) ? throw new ArgumentNullException(error != null ? error : typeof(T) + " was null") : t!;
 
 
     /// <summary>
@@ -22,7 +22,7 @@ public static class Z
     /// </summary>
     /// <param name="o"></param>
     /// <exception cref="Exception"></exception>
-    public static void Panic(this object o) => throw new Exception(o.ToString());
+    public static void Panic<T>(this T o) => throw new Exception(o != null ? o.ToString() : "Panic !");
 
     public static void Todo() => "Todo".Panic();
 

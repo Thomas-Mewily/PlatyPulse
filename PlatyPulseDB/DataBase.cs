@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace PlatyPulseWebAPI;
 
-public class DataBaseCtx : DbContext
+public class DataBaseCtx(DbContextOptions<DataBaseCtx> options) : DbContext(options)
 {
     //public static DataBaseCtx Instance { get; } = new DataBaseCtx();
 
@@ -25,8 +25,6 @@ public class DataBaseCtx : DbContext
 
     public User? AccountFromEmail(Email email) { return Account.FirstOrDefault(e => e.Email == email); }
     public bool EmailAvailable(Email email) { return AccountFromEmail(email) == null; }
-
-    public DataBaseCtx(DbContextOptions<DataBaseCtx> options) : base(options) { }
 
     //public DataBaseCtx() { }
 

@@ -16,6 +16,7 @@ public enum Role
 /// </summary>
 public class User : IdentifiableData
 {
+    /// ================= Fields =========
     public Pseudo Pseudo { get; set; } = new();
     [JsonIgnore]
     public Email  Email { get; set; } = new();
@@ -28,10 +29,18 @@ public class User : IdentifiableData
     public DateTime CreationDate { get; set; } = DateTime.Now;
     public XP XP { get; set; } = XP.Zero;
 
-    public override string ToString() => Pseudo + "#" + ID;
 
-    public static User TestDefault => new();
-    public static User TestDefaultAdmin => new(Role.Admin);
+    public override void ForceUpdateFrom(IdentifiableData other)
+    {
+        var u = (other as User).Unwrap();
+        Pseudo = u.Pseudo;
+        // Email and Password can't be edited here because of security
+
+        // To test, todo : delete it
+        XP = u.XP;
+    }
+
+    /// ================= Rest =========
 
     public User() { }
     public User(Role role) : this() { Role = role;  }
@@ -48,6 +57,19 @@ public class User : IdentifiableData
     [NotMapped]
     [JsonIgnore]
     public bool IsAdmin => Role == Role.Admin;
+    [NotMapped]
+    [JsonIgnore]
+    public bool IsNotAdmin => !IsAdmin;
+
+    protected override bool _CanBeEditedBy(User u) => u.ID == ID;
+
+    public override string ToString() => (IsAdmin ? "admin " : "") + Pseudo + "#" + ID;
+
+    public static User TestDefault => new();
+    public static User TestDefaultAdmin => new(Role.Admin);
+
+
+
 
     // We don't need that for the moment
     // public DateTime Birthday { get; set; } = new DateTime(1000);

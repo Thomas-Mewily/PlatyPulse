@@ -1,17 +1,4 @@
-﻿global using ID = System.Guid;
-global using ChallengeID = System.Guid;
-global using QuestID = System.Guid;
-global using UserID = System.Guid;
-global using PseudoID = System.Guid;
-global using EmailID = System.Guid;
-global using ChallengeEntryID = System.Guid;
-global using QuestEntryID = System.Guid;
-global using Meter = double;
-global using PushUp = int;
-
-global using BetterCSharp;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Collections.ObjectModel;
 using PlatyPulseAPI.Data;
@@ -26,6 +13,7 @@ public class PlatyApp : PlatyAppComponent
 
     public new DateTime CurrentTime { get; private set; } = DateTime.Now;
 
+    public new JWTString CurrentSession { get; private set; } = JWTString.Empty;
     public new User? CurrentUser { get; private set; }
     public new Challenge DailyChallenge { get; private set; } = new();
 
@@ -119,6 +107,9 @@ public class PlatyAppComponent
 #pragma warning restore CA1822 // Marquer les membres comme étant static
     [NotMapped] [JsonIgnore]
     public DateTime CurrentTime => App.CurrentTime;
+
+    [NotMapped] [JsonIgnore]
+    public JWTString CurrentSession => App.CurrentSession;
     [NotMapped] [JsonIgnore]
     public User? CurrentUser => App.CurrentUser;
     [NotMapped] [JsonIgnore]

@@ -19,8 +19,18 @@ public class Challenge : IdentifiableOwnedByData
 
     public List<Quest> Quests { get; set; } = [];
 
-    /// ================= Properties =========
+    public override void ForceUpdateFrom(IdentifiableData other)
+    {
+        var c = (other as Challenge).Unwrap();
+        Begin = c.Begin;
+        Duration = c.Duration;
+        Quests = c.Quests;
+    }
+
+    /// ================= Rest =========
+    [NotMapped] [JsonIgnore]
     public DateTime End => Begin + Duration;
+    [NotMapped] [JsonIgnore]
     public TimeSpan TimeRemaning => End - CurrentTime;
 
     [NotMapped] [JsonIgnore]

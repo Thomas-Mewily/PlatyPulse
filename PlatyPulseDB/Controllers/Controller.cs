@@ -6,41 +6,36 @@ namespace PlatyPulseWebAPI.Controllers;
 // Controller pour Quest
 [Route("api/[controller]")]
 [ApiController]
-public class QuestsController : GenericController<Quest>
+public class QuestsController(DataBaseCtx db, IConfiguration config) : GenericController<Quest>(db, config)
 {
-    public QuestsController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 // Controller pour Challenge
 [Route("api/[controller]")]
 [ApiController]
-public class ChallengesController : GenericController<Challenge>
+public class ChallengesController(DataBaseCtx db, IConfiguration config) : GenericController<Challenge>(db, config)
 {
-    public ChallengesController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 // Controller pour User
 [Route("api/[controller]")]
 [ApiController]
-public class UsersController : GenericController<User>
+public class UsersController(DataBaseCtx db, IConfiguration config) : GenericController<User>(db, config)
 {
-    public UsersController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 // Controller pour ChallengeEntry
 [Route("api/[controller]")]
 [ApiController]
-public class ChallengeEntriesController : GenericController<ChallengeEntry>
+public class ChallengeEntriesController(DataBaseCtx db, IConfiguration config) : GenericController<ChallengeEntry>(db, config)
 {
-    public ChallengeEntriesController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 // Controller pour QuestEntry
 [Route("api/[controller]")]
 [ApiController]
-public class QuestEntriesController : GenericController<QuestEntry>
+public class QuestEntriesController(DataBaseCtx db, IConfiguration config) : GenericController<QuestEntry>(db, config)
 {
-    public QuestEntriesController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
 }
 
 /*

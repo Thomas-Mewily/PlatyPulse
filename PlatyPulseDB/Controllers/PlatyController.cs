@@ -11,18 +11,12 @@ using System.Text;
 
 namespace PlatyPulseWebAPI.Controllers;
 
-public class PlatyController : ControllerBase
+public class PlatyController(DataBaseCtx db, IConfiguration config) : ControllerBase
 {
     protected const string SEL = "LeSelJaiPerduAuJeu";
 
-    protected readonly DataBaseCtx Db;
-    protected readonly IConfiguration Config;
-
-    public PlatyController(DataBaseCtx db, IConfiguration config)
-    {
-        Db = db;
-        Config = config;
-    }
+    protected readonly DataBaseCtx Db = db;
+    protected readonly IConfiguration Config = config;
 
     private string TopSecretToken()
     {
@@ -56,6 +50,12 @@ public class PlatyController : ControllerBase
 
     protected void CheckToken(JWTString token) => CheckTokenAndGetEmail(token);
     protected User CheckTokenAndGetUser(JWTString token) => GetAccount(CheckTokenAndGetEmail(token));
+
+    protected void CheckSameID<T>(T t, ID id) where T : IdentifiableData 
+    {
+        if(t.ID == id) { return; } 
+        throw new Exception("Missmatch id for " + typeof(T).Name + ", got " + id + " in the url but expected id " + t.ID);
+    }
 
     protected Email CheckTokenAndGetEmail(JWTString token)
     {
