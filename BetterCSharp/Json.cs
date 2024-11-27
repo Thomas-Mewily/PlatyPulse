@@ -5,19 +5,19 @@ namespace BetterCSharp;
 
 public static class Json
 {
-    private static readonly JsonSerializerOptions JsonOption;
+    public static readonly JsonSerializerOptions Option;
     static Json()
     {
-        JsonOption = new JsonSerializerOptions();
+        Option = new JsonSerializerOptions();
     }
 
-    public static string ToJson<T>(this T o) => JsonSerializer.Serialize(o, JsonOption);
+    public static string ToJson<T>(this T o) => JsonSerializer.Serialize(o, Option);
 
     public static T? TryFromJson<T>(string json) 
     {
         try
         {
-            return JsonSerializer.Deserialize<T>(json, JsonOption);
+            return JsonSerializer.Deserialize<T>(json, Option);
         }
         catch (Exception) 
         { 

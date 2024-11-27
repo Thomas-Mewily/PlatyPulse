@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
 using System.Net;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI.Value;
@@ -41,3 +42,16 @@ public record Pseudo
     public override string ToString() => Name;
 }
 
+public class PseudoJsonConverter : JsonConverter<Pseudo>
+{
+    public override Pseudo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.String) { return reader.GetString().Unwrap().ToPseudo(); }
+        throw new JsonException("Invalid JSON format for Pseudo.");
+    }
+
+    public override void Write(Utf8JsonWriter writer, Pseudo value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.Name);
+    }
+}

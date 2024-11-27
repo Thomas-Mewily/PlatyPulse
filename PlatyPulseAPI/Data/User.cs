@@ -81,14 +81,48 @@ public class User : IdentifiableData
 
 public class UserRegister
 {
-    public required string Email { get; set; }
-    public required string Pseudo { get; set; }
-    public required string Password { get; set; }
+    public string Email { get; set; } = "";
+    public string Pseudo { get; set; } = "";
+    public string Password { get; set; } = "";
+
+    public UserRegister() { }
+    public UserRegister(string email, string pseudo, string password) { Email = email; Pseudo = pseudo;  Password = password; }
+
+    public override string ToString() => Pseudo + " / " + Email + " / " + Password;
 }
 
 public class UserLogin
 {
-    public required string Email { get; set; }
-    public required string Password { get; set; }
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+
+    public UserLogin() { }
+    public UserLogin(string email, string password) { Email = email; Password = password; }
+
+    public override string ToString() => Email + " / " + Password;
 }
 
+public class UserLogged
+{
+    public User User { get; set; } = new();
+    public JWTString JWT { get; set; } = "";
+
+    [NotMapped]
+    [JsonIgnore]
+    public bool IsConnected => JWT.Length > 0;
+
+    public UserLogged() { }
+    public UserLogged(User user, string jwt)
+    {
+        User = user;
+        JWT = jwt;
+    }
+
+    public void Disconnect() 
+    {
+        User = new();
+        JWT = "";
+    }
+
+    public override string ToString() => User + " : " + JWT;
+}

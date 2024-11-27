@@ -18,11 +18,8 @@ namespace PlatyPulseWebAPI.Controllers;
 public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyController(db, config)
 {
     [HttpPost("register")]
-    public ActionResult<User> Register(UserRegister request) 
+    public ActionResult<UserLogged> Register(UserRegister request) 
     {
-        // Todo : make sure the username is valid
-        // Todo : make sure the password is also valid and secure
-
         try 
         {
             var password = request.Password.CheckPasswordRobust();
@@ -32,7 +29,7 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
 
             if (!Db.EmailAvailable(request.Email.ToEmail()))
             {
-                return BadRequest($"Username {request.Email} is already taken");
+                return BadRequest($"Email {request.Email} is already taken");
             }
 
             var user = new User(pseudo, email, passwordHashed, Role.Consumer, DateTime.Now, 0.XP());
@@ -41,7 +38,8 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
             // same for every add, maybe overload the add func
             Db.Add(user);
             Db.SaveChanges();
-            return Ok(user);
+            return Login(new UserLogin(email.Address, request.Password));
+            //return Ok(user);
         }
         catch (Exception ex)
         {
@@ -49,24 +47,26 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
         }
     }
 
-    [HttpGet("login")]
-    public ActionResult<JWTString> Login([FromQuery] UserLogin request)
+    [HttpPost("login")]
+    public ActionResult<UserLogged> Login([FromQuery] UserLogin request)
     {
         try 
         {
-            var account = GetAccount(request.Email);
+            var u = GetAccount(request.Email);
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, account.PasswordHashed))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, u.PasswordHashed))
             {
-                return BadRequest("Wrong password");
+                throw new Exception();
             }
 
-            JWTString token = CreateToken(account);
-            return Ok(token);
+            var logged_user = new UserLogged(u, CreateToken(u));
+            return Ok(logged_user);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return BadRequest(e.Message);
+            // Security : Don't tell what wrong, to avoid hacker to scrap user email
+
+            return BadRequest("Wrong email or password");
         }
     }
 
@@ -91,7 +91,20 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
         try 
         {
             var u = CheckTokenAndGetUser(token);
-            return Ok("Tu as " + u.XP + "!");
+            return Ok(u.XP.ToJson());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("user_data")]
+    public ActionResult<User> GetUserData([FromQuery] JWTString token)
+    {
+        try
+        {
+            return Ok(CheckTokenAndGetUser(token).ToJson());
         }
         catch (Exception ex)
         {

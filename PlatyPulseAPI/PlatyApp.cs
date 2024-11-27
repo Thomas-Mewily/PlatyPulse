@@ -4,51 +4,174 @@ using System.Collections.ObjectModel;
 using PlatyPulseAPI.Data;
 using PlatyPulseAPI.Value;
 using System.ComponentModel.DataAnnotations.Schema;
+using BetterCSharp;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System;
 
 namespace PlatyPulseAPI;
 
-public class PlatyApp : PlatyAppComponent
+public partial class PlatyApp : PlatyAppComponent
 {
     public static PlatyApp Instance { get; private set; } = new PlatyApp();
 
+    [NotMapped]
+    [JsonIgnore]
     public new DateTime CurrentTime { get; private set; } = DateTime.Now;
 
-    public new JWTString CurrentSession { get; private set; } = JWTString.Empty;
-    public new User? CurrentUser { get; private set; }
+    [NotMapped]
+    [JsonIgnore]
+    public new UserLogged LoggedUser { get; private set; } = new();
+
+    [NotMapped]
+    [JsonIgnore]
+    public new JWTString JWT => LoggedUser.JWT;
+
+    [NotMapped]
+    [JsonIgnore]
+    public new User? MaybeCurrentUser => LoggedUser.User;
+
+    [NotMapped]
+    [JsonIgnore]
+    public new HttpClient WebClient { get; private set; } = new();
+
+    public new User CurrentUser() => MaybeCurrentUser.Unwrap();
+
+    [NotMapped]
+    [JsonIgnore]
     public new Challenge DailyChallenge { get; private set; } = new();
 
+    [NotMapped]
+    [JsonIgnore]
     public ReadOnlyDictionary<ChallengeID, Challenge> AllChallenges => _AllChallenges.AsReadOnly();
+    [NotMapped]
+    [JsonIgnore]
     public Dictionary<ChallengeID, Challenge> _AllChallenges = [];
 
+    [NotMapped]
+    [JsonIgnore]
     public ReadOnlyDictionary<ChallengeEntryID, ChallengeEntry> AllChallengesEntries => _AllChallengesEntries.AsReadOnly();
+    [NotMapped]
+    [JsonIgnore]
     public Dictionary<ChallengeEntryID, ChallengeEntry> _AllChallengesEntries = [];
 
+    [NotMapped]
+    [JsonIgnore]
     public ReadOnlyDictionary<QuestID, Quest> AllQuests { get => _AllQuests.AsReadOnly(); }
+    [NotMapped]
+    [JsonIgnore]
     public Dictionary<QuestID, Quest> _AllQuests = [];
 
+    [NotMapped]
+    [JsonIgnore]
     public ReadOnlyDictionary<QuestEntryID, QuestEntry> AllQuestsEntries => _AllQuestsEntries.AsReadOnly();
+    [NotMapped]
+    [JsonIgnore]
     public Dictionary<QuestEntryID, QuestEntry> _AllQuestsEntries = [];
 
+    [NotMapped]
+    [JsonIgnore]
     public ReadOnlyDictionary<UserID, User> AllUser => _AllUser.AsReadOnly();
+    [NotMapped]
+    [JsonIgnore]
     public Dictionary<UserID, User> _AllUser = [];
 
-    public new bool IsConnected => CurrentUser != null;
+    [NotMapped]
+    [JsonIgnore]
+    public new bool IsConnected => MaybeCurrentUser != null;
+}
 
-    public new void LogOut() { CurrentUser = null; }
 
-    public new bool LogIn(string email, string mdp) 
+public partial class PlatyApp : PlatyAppComponent
+{
+    private static string ServerApiURL = "https://localhost:7021/";
+
+    public new void LogOut() 
     {
-        if (IsConnected) { LogOut(); }
-
-        // Todo : check mdp / password, and retrive user information
-        return LoggedAs(User.TestDefault);
+        LoggedUser.Disconnect();
     }
 
-    private bool LoggedAs(User user)
+    private string GetUrl(string entry_point) => ServerApiURL + "api/" + entry_point;
+
+    private async Task<HttpResponseMessage?> _DbPostAsync(string entry_point, string content = "")
     {
-        CurrentUser = user;
-        return true;
+        var url = GetUrl(entry_point);
+        var web_content = new StringContent(content, Encoding.UTF8, "application/json");
+
+        var response = await WebClient.PostAsync(url, web_content);
+        if (!response.IsSuccessStatusCode) { throw new Exception("Post error " + response.StatusCode + " : " + response.Content.ToString());  }
+        return response;
     }
+    public async Task<R> DbPost<C, R>(string url, C content)
+    {
+        string content_json = JsonSerializer.Serialize(content);
+        var web_result = _DbPostAsync(url, content_json);
+        var reponse = (await web_result).Unwrap();
+        string result_json = await reponse.Content.ReadAsStringAsync();
+        Console.WriteLine("Post : " + result_json);
+
+        var result = JsonSerializer.Deserialize<R>(result_json);
+        return result.Unwrap();
+    }
+
+    private async Task<HttpResponseMessage?> _DbGetAsync(string entry_point, JWTString token = "")
+    {
+        var url = GetUrl(entry_point) + "?token=" + Uri.EscapeDataString(token);
+        var response = await WebClient.GetAsync(url);
+        if (!response.IsSuccessStatusCode) { throw new Exception("Get error " + response.StatusCode + " : " + response.Content.ToString()); }
+        Console.WriteLine("Get : " + response.ToString());
+        return response;
+    }
+    public async Task<R> DbGetAsync<R>(string url, JWTString? token = null)
+    {
+        var web_result = _DbGetAsync(url, token ?? JWT);
+        var reponse = (await web_result).Unwrap();
+        string result_json = await reponse.Content.ReadAsStringAsync();
+        Console.WriteLine("Get : " + result_json);
+
+        var result = JsonSerializer.Deserialize<R>(result_json);
+        return result.Unwrap();
+    }
+
+    public async Task<User> DbGetUserData(JWTString? token = null) => await DbGetAsync<User>("user_data", token);
+
+    public new async Task<bool> LogIn(Email email, string mdp) => await LogIn(new UserLogin(email.Address, mdp));
+    public new async Task<bool> LogIn(UserLogin login)
+    {
+        try
+        {
+            LogOut();
+
+            login.Email.ToEmail().Check();
+            LoggedUser = await DbPost<UserLogin, UserLogged>("Auth/login", login);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    public new async Task<bool> Register(string email, string pseudo, string mdp) => await Register(new UserRegister(email, pseudo, mdp));
+
+    /// <summary>
+    /// Regster and loggin the new created user
+    /// </summary>
+    /// <param name="email"></param>
+    /// <param name="pseudo"></param>
+    /// <param name="mdp"></param>
+    /// <returns></returns>
+    public new async Task<bool> Register(UserRegister register)
+    {
+        register.Email.ToEmail().Check();
+        register.Pseudo.ToPseudo().Check();
+        register.Password.CheckPasswordRobust();
+
+        var token = await DbPost<UserRegister, JWTString>("Auth/register", register);
+        return await LogIn(token);
+    }
+
 
     //public bool LogInAsAdmin() => 
 
@@ -76,7 +199,6 @@ public class PlatyApp : PlatyAppComponent
             ]
         );
 
-        LoggedAs(User.TestDefaultAdmin);
         var c = Challenge.Daily([run, push_up]);
         //c.ServerUpload();
         //AddChallenge(c);
@@ -92,6 +214,14 @@ public class PlatyApp : PlatyAppComponent
         {
             
         }
+    }
+
+    public static void InitJsonSerializerOptions(JsonSerializerOptions? option = null) 
+    {
+        var o = option ?? Json.Option;
+        o.Converters.Add(new XPJsonConverter());
+        o.Converters.Add(new EmailJsonConverter());
+        o.Converters.Add(new PseudoJsonConverter());
     }
 }
 
@@ -109,17 +239,31 @@ public class PlatyAppComponent
     public DateTime CurrentTime => App.CurrentTime;
 
     [NotMapped] [JsonIgnore]
-    public JWTString CurrentSession => App.CurrentSession;
+    public UserLogged LoggedUser => App.LoggedUser;
     [NotMapped] [JsonIgnore]
-    public User? CurrentUser => App.CurrentUser;
+    public JWTString JWT => App.JWT;
+    [NotMapped] [JsonIgnore]
+    public User? MaybeCurrentUser => App.MaybeCurrentUser;
+    public User  CurrentUser() => App.CurrentUser();
+
     [NotMapped] [JsonIgnore]
     public Challenge DailyChallenge => App.DailyChallenge;
+    [NotMapped] [JsonIgnore]
+    public HttpClient WebClient => App.WebClient;
+
 
     [NotMapped] [JsonIgnore]
     public bool IsConnected => App.IsConnected;
+
     public void LogOut() => App.LogOut();
 
-    public bool LogIn(string email, string mdp) => App.LogIn(email, mdp);
+    public new async Task<bool> LogIn(Email email, string mdp) => await App.LogIn(email, mdp);
+    public new async Task<bool> LogIn(UserLogin login) => await App.LogIn(login);
+    public new async Task<bool> LogIn(JWTString token) => await App.LogIn(token);
+
+    public new async Task<bool> Register(string email, string pseudo, string mdp) => await App.Register(email, pseudo, mdp);
+    public new async Task<bool> Register(UserRegister register) => await App.Register(register);
+
 
 
     // Challenge

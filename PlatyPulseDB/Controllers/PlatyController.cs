@@ -34,7 +34,7 @@ public class PlatyController(DataBaseCtx db, IConfiguration config) : Controller
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TopSecretToken()));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(7), signingCredentials: creds);
+        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(14), signingCredentials: creds);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return jwt;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
 using System.Net.Mail;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI.Value;
@@ -54,3 +55,16 @@ public record Email
     public override string ToString() => Address;
 }
 
+public class EmailJsonConverter : JsonConverter<Email>
+{
+    public override Email Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.String) { return reader.GetString().Unwrap().ToEmail(); }
+        throw new JsonException("Invalid JSON format for Email.");
+    }
+
+    public override void Write(Utf8JsonWriter writer, Email value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.Address);
+    }
+}

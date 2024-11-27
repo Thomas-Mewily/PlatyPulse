@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using PlatyPulseAPI;
+using PlatyPulseAPI.Value;
 
 namespace PlatyPulseWebAPI
 {
@@ -6,12 +8,19 @@ namespace PlatyPulseWebAPI
     {
         public static void Main(string[] args)
         {
+            PlatyApp.InitJsonSerializerOptions();
+            var j = 10.XP().ToJson();
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Ajouter les services au conteneur
 
             // Ajoute les contrôleurs
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                PlatyApp.InitJsonSerializerOptions(options.JsonSerializerOptions);
+            });
+
 
             // Configuration de la base de données SQLite
             builder.Services.AddDbContext<DataBaseCtx>(options =>
