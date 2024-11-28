@@ -11,34 +11,37 @@ using System.Text;
 
 namespace PlatyPulseWebAPI.Controllers;
 
-public class PlatyController(DataBaseCtx db, IConfiguration config) : ControllerBase
+public class PlatyController : ControllerBase
 {
-    protected const string SEL = "LeSelJaiPerduAuJeu";
+    protected readonly DataBaseCtx Db;
+    protected readonly IConfiguration Config;
 
-    protected readonly DataBaseCtx Db = db;
-    protected readonly IConfiguration Config = config;
-
-    private string TopSecretToken()
+    public PlatyController(DataBaseCtx db, IConfiguration config) : base() 
     {
-        var token_path = "AppSettings:Token";
-        return Config.GetSection(token_path).Value.Unwrap(token_path);
+        Db = db;
+        Config = config;
     }
 
-    protected JWTString CreateToken(User acc)
-    {
-        var claims = new List<Claim>
+    public UserID UserID 
+    { 
+        get 
         {
-            new Claim(ClaimTypes.Email, acc.Email.Address)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TopSecretToken()));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(14), signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwt;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) { throw new Exception("User ID not found in token."); }
+            return Guid.Parse(userIdClaim);
+        } 
     }
+
+    private User? _CurrentUser = null;
+    public User CurrentUser 
+    {
+        get 
+        {
+            if (_CurrentUser == null) { _CurrentUser = Db.User.Find(UserID).Unwrap(); }
+            return _CurrentUser;
+        }
+    }
+
 
     //Db.Account.FirstOrDefault(a => a.Email == request.Email);
     protected User GetAccount(Email email) => Db.Account.FirstOrDefault(a => a.Email == email).Unwrap("No Account associated with " + email);
@@ -47,9 +50,10 @@ public class PlatyController(DataBaseCtx db, IConfiguration config) : Controller
     protected User GetAccount(ID id) => Db.Account.FirstOrDefault(a => a.ID == id).Unwrap("Can't find user " + id);
 
 
-
+    /*
     protected void CheckToken(JWTString token) => CheckTokenAndGetEmail(token);
     protected User CheckTokenAndGetUser(JWTString token) => GetAccount(CheckTokenAndGetEmail(token));
+    */
 
     protected void CheckSameID<T>(T t, ID id) where T : IdentifiableData 
     {
@@ -57,6 +61,7 @@ public class PlatyController(DataBaseCtx db, IConfiguration config) : Controller
         throw new Exception("Missmatch id for " + typeof(T).Name + ", got " + id + " in the url but expected id " + t.ID);
     }
 
+    /*
     protected Email CheckTokenAndGetEmail(JWTString token)
     {
         if (string.IsNullOrEmpty(token))
@@ -65,7 +70,7 @@ public class PlatyController(DataBaseCtx db, IConfiguration config) : Controller
         }
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(TopSecretToken());
+        var key = Encoding.UTF8.GetBytes(Secret.TopSecretToken());
 
         try 
         {
@@ -92,5 +97,5 @@ public class PlatyController(DataBaseCtx db, IConfiguration config) : Controller
         {
             throw new Exception("JWT Token is invalid.");
         }
-    }
+    }*/
 }

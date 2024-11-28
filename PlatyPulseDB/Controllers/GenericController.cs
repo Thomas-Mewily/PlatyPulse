@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlatyPulseAPI.Data;
 
@@ -42,6 +43,7 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// <summary>
     /// Ajoute un nouvel élément
     /// </summary>
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<T>> Create([FromBody] T item)
     {
@@ -56,6 +58,7 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// <summary>
     /// Supprime un élément par son ID
     /// </summary>
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(ID id)
     {
@@ -71,16 +74,16 @@ public class GenericController<T> : PlatyController where T : IdentifiableData
     /// <summary>
     /// Met à jour un élément
     /// </summary>
+    [Authorize]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(ID id, JWTString token, [FromBody] T item)
+    public async Task<IActionResult> Update(ID id, [FromBody] T item)
     {
         try 
         {
             CheckSameID(item, id);
-            var u = CheckTokenAndGetUser(token);
 
             var will_be_updated = _dbSet.Find(item.ID).Unwrap();
-            will_be_updated.UpdateFrom(item, u);
+            will_be_updated.UpdateFrom(item, CurrentUser);
 
             _dbSet.Update(will_be_updated);
             await _dbContext.SaveChangesAsync();

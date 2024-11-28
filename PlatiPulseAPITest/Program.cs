@@ -7,10 +7,11 @@ using PlatyPulseAPI.Value;
 
 public class Program : PlatyAppComponent
 {
-    static void Main()
+    static async Task Main()
     {
         PlatyApp.InitJsonSerializerOptions();
-        _ = new Program();
+        var p = new Program();
+        await p.Test();
     }
     
     private void TestDailyChallenge() 
@@ -28,11 +29,11 @@ public class Program : PlatyAppComponent
         Console.WriteLine();
     }
 
-    private void Wait() { Thread.Sleep(200);  }
+    private void Wait() { Thread.Sleep(3000);  }
     private void LongWait() { Thread.Sleep(7000); }
 
 
-    private async void TestRegisterNewAccount()
+    private async Task TestRegisterNewAccount()
     {
         var uid = new Random().Next(0, 1000000);
         var email = "test_" + uid + "test@test";
@@ -42,40 +43,36 @@ public class Program : PlatyAppComponent
         var register = new UserRegister(email, pseudo, mdp);
 
         Console.WriteLine("Registering " + register + "... ");
-        var ok = await Register(email, pseudo, mdp);
-        Console.WriteLine(ok + " : " + MaybeCurrentUser);
+        await Register(email, pseudo, mdp);
     }
 
-    private void TestLoginAndEditXP(XP xp)
+    private async Task SetXP()
     {
-        LongWait();
-        LogIn("hello@test.test".ToEmail(), "Sami1234?");
 
-        var user = MaybeCurrentUser.Unwrap();
-
-        Console.WriteLine(MaybeCurrentUser + "have " + MaybeCurrentUser.XP);
-
-        MaybeCurrentUser.XP = xp;
-        MaybeCurrentUser.ServerUpload();
-
-        Wait();
-        MaybeCurrentUser.ServerDownload();
-
-        Wait();
-        Console.WriteLine(MaybeCurrentUser + "have now " + MaybeCurrentUser.XP);
-        LogOut();
+        Console.WriteLine(CurrentUser + " have " + CurrentUser.XP);
+        CurrentUser.XP += 10.XP();
+        await CurrentUser.ServerUpdate();
+        CurrentUser.XP = 0.XP();
+        await CurrentUser.ServerDownload();
+        Console.WriteLine(CurrentUser + " have now " + CurrentUser.XP);
     }
 
-    private void TestWaitForSwagger() 
+    private async Task TestWaitForSwagger() 
     {
         LongWait();
-        Console.WriteLine("Start " + DateTime.Now);
+        Console.WriteLine("Start at " + DateTime.Now);
+        Console.WriteLine();
+
         //TestLoginAndEditXP(200.XP());
-        TestRegisterNewAccount();
+        await TestRegisterNewAccount();
+        Console.WriteLine("I'm " + CurrentUser);
+        Console.WriteLine();
 
-        LongWait();
-        Console.WriteLine("I'm " + MaybeCurrentUser);
+        await SetXP();
+        Console.WriteLine();
 
+
+        Console.WriteLine();
         Console.WriteLine("Done " + DateTime.Now);
     }
 
@@ -96,9 +93,11 @@ public class Program : PlatyAppComponent
         Console.WriteLine(hardcoded);
     }
 
-    public Program()
+    public Program() { }
+
+    public async Task Test() 
     {
         //TestJson();
-        TestWaitForSwagger();
+        await TestWaitForSwagger();
     }
 }

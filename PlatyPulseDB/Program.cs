@@ -1,11 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PlatyPulseAPI;
 using PlatyPulseAPI.Value;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace PlatyPulseWebAPI
 {
     public class Program
     {
+
+
+
         public static void Main(string[] args)
         {
             PlatyApp.InitJsonSerializerOptions();
@@ -27,7 +34,6 @@ namespace PlatyPulseWebAPI
 
             // Ajouter Swagger/OpenAPI pour la documentation de l'API
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             // Configuration des CORS si nécessaire (exemple d'autorisation de toutes les origines pour les tests)
             builder.Services.AddCors(options =>
@@ -37,6 +43,56 @@ namespace PlatyPulseWebAPI
                     policy.AllowAnyOrigin()
                           .AllowAnyMethod()
                           .AllowAnyHeader();
+                });
+            });
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret.TopSecretToken())),  // Your secret key used to sign the JWT
+                    ClockSkew = TimeSpan.Zero  // Optional: Remove clock skew
+                };
+            });
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                // Add a security definition for the Bearer token
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter JWT token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer",
+                });
+
+                // Add security requirement to ensure the Bearer token is included in the Swagger UI
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
                 });
             });
 

@@ -30,13 +30,15 @@ public partial class PlatyApp : PlatyAppComponent
 
     [NotMapped]
     [JsonIgnore]
-    public new User? MaybeCurrentUser => LoggedUser.User;
+    public User? MaybeCurrentUser => LoggedUser.User;
 
     [NotMapped]
     [JsonIgnore]
     public new HttpClient WebClient { get; private set; } = new();
 
-    public new User CurrentUser() => MaybeCurrentUser.Unwrap();
+    [NotMapped]
+    [JsonIgnore]
+    public new User CurrentUser => MaybeCurrentUser.Unwrap();
 
     [NotMapped]
     [JsonIgnore]
@@ -106,10 +108,10 @@ public partial class PlatyApp : PlatyAppComponent
         var web_result = _DbPostAsync(url, content_json);
         var reponse = (await web_result).Unwrap();
         string result_json = await reponse.Content.ReadAsStringAsync();
-        Console.WriteLine("Post : " + result_json);
+        //Console.WriteLine("Post : " + result_json);
 
         var result = Json.From<R>(result_json);
-        Console.WriteLine("Post Result : " + result);
+        //Console.WriteLine("Post Result : " + result);
         return result;
     }
 
@@ -126,7 +128,7 @@ public partial class PlatyApp : PlatyAppComponent
         var web_result = _DbGetAsync(url, token ?? JWT);
         var reponse = (await web_result).Unwrap();
         string result_json = await reponse.Content.ReadAsStringAsync();
-        Console.WriteLine("Get : " + result_json);
+        //Console.WriteLine("Get : " + result_json);
 
         var result = Json.From<R>(result_json);
         return result.Unwrap();
@@ -174,6 +176,14 @@ public partial class PlatyApp : PlatyAppComponent
         LoggedAs(user_logged);
         return true;
     }
+
+    /*
+    public new async Task Update<T>(T value) where T: IdentifiableData
+    {
+        var user_logged = await DbPost<UserRegister, UserLogged>(typeof(T).Name, register);
+        LoggedAs(user_logged);
+        return true;
+    }*/
 
 
     //public bool LogInAsAdmin() => 
@@ -242,12 +252,14 @@ public class PlatyAppComponent
     public DateTime CurrentTime => App.CurrentTime;
 
     [NotMapped] [JsonIgnore]
-    public UserLogged LoggedUser => App.LoggedUser;
-    [NotMapped] [JsonIgnore]
     public JWTString JWT => App.JWT;
-    [NotMapped] [JsonIgnore]
-    public User? MaybeCurrentUser => App.MaybeCurrentUser;
-    public User  CurrentUser() => App.CurrentUser();
+
+    /// <summary>
+    /// The current logged user
+    /// </summary>
+    [NotMapped]
+    [JsonIgnore]
+    public User  CurrentUser => App.CurrentUser;
 
     [NotMapped] [JsonIgnore]
     public Challenge DailyChallenge => App.DailyChallenge;
@@ -260,12 +272,14 @@ public class PlatyAppComponent
 
     public void LogOut() => App.LogOut();
 
+#pragma warning disable CS0109 // Un membre ne masque pas un membre hérité ; le mot clé new n'est pas requis
     public new async Task<bool> LogIn(Email email, string mdp) => await App.LogIn(email, mdp);
     public new async Task<bool> LogIn(UserLogin login) => await App.LogIn(login);
     public new async Task<bool> LogIn(JWTString token) => await App.LogIn(token);
 
     public new async Task<bool> Register(string email, string pseudo, string mdp) => await App.Register(email, pseudo, mdp);
     public new async Task<bool> Register(UserRegister register) => await App.Register(register);
+#pragma warning restore CS0109 // Un membre ne masque pas un membre hérité ; le mot clé new n'est pas requis
 
 
 

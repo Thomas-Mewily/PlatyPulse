@@ -1,4 +1,5 @@
 ﻿using BetterCSharp;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -25,7 +26,7 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
             var password = request.Password.CheckPasswordRobust();
             var pseudo = request.Pseudo.ToPseudo().Check();
             var email = request.Email.ToEmail().Check();
-            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password + SEL);
+            var passwordHashed = BCrypt.Net.BCrypt.HashPassword(password + Secret.Sel());
 
             if (!Db.EmailAvailable(request.Email.ToEmail()))
             {
@@ -54,7 +55,7 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
         {
             var u = GetAccount(request.Email);
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password + SEL, u.PasswordHashed))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password + Secret.Sel(), u.PasswordHashed))
             {
                 throw new Exception();
             }
@@ -70,28 +71,28 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
         }
     }
 
-    
-    [HttpGet("validate-token")]
-    public IActionResult ValidateToken([FromQuery] JWTString token)
+        
+    [HttpGet("get_xp")]
+    public ActionResult<string> GetXP()
     {
         try 
         {
-            return Ok(CheckTokenAndGetEmail(token));
+            return Ok(CurrentUser.XP.ToJson());
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return Unauthorized(e.Message);
+            return BadRequest(ex.Message);
         }
     }
 
-    
-    [HttpGet("get_xp")]
-    public ActionResult<string> GetXP([FromQuery] JWTString token)
+
+    [Authorize]
+    [HttpGet("get_xp_logged")]
+    public ActionResult<string> GetXPLogged()
     {
-        try 
+        try
         {
-            var u = CheckTokenAndGetUser(token);
-            return Ok(u.XP.ToJson());
+            return Ok(CurrentUser.XP.ToJson());
         }
         catch (Exception ex)
         {
@@ -100,15 +101,61 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
     }
 
     [HttpGet("user_data")]
-    public ActionResult<User> GetUserData([FromQuery] JWTString token)
+    public ActionResult<User> GetUserData()
     {
         try
         {
-            return Ok(CheckTokenAndGetUser(token).ToJson());
+            return Ok(CurrentUser.ToJson());
         }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    /*
+    protected JWTString CreateToken(User acc)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Email, acc.Email.Address)
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret.TopSecretToken()));
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(14), signingCredentials: creds);
+
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+        return jwt;
+    }*/
+
+    protected JWTString CreateToken(User u)
+    {
+        // Define the claims (use whatever claims you need here, this is just an example with email)
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Email, u.Email.Address),
+            new Claim(ClaimTypes.NameIdentifier, u.ID.ToString()),
+        };
+
+        // Secret key for signing the token (should be stored securely, not hardcoded in production)
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret.TopSecretToken()));  // Make sure this key is long enough (at least 128 bits)
+
+        // Create signing credentials
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        // Create the JWT token
+        var token = new JwtSecurityToken(
+            claims: claims,                      // Add claims
+            expires: DateTime.Now.AddDays(14),   // Set expiration time (adjust this as needed)
+            signingCredentials: creds           // Use the signing credentials
+        );
+
+        // Serialize the token to a string
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+        // Return the token (can be a string or a custom JWTString type)
+        return jwt;
     }
 }

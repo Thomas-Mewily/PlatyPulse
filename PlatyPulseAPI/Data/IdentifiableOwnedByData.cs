@@ -17,11 +17,17 @@ public abstract class IdentifiableData : PlatyAppComponent
     /// <summary>
     /// Upload the data to the server
     /// </summary>
-    public virtual void ServerUpload() { "todo".Panic(); }
+    public async Task ServerUpdate() 
+    {
+        
+    }
     /// <summary>
     /// Download the data from the server
     /// </summary>
-    public virtual void ServerDownload() { "todo".Panic(); }
+    public async Task ServerDownload() 
+    { 
+        
+    }
 
     public override string ToString() => $"{GetType().Name}#{ID}";
 
