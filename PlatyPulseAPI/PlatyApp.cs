@@ -22,7 +22,7 @@ public partial class PlatyApp : PlatyAppComponent
 
     [NotMapped]
     [JsonIgnore]
-    public new UserLogged LoggedUser { get; private set; } = new();
+    public UserLogged LoggedUser { get; private set; } = new();
 
     [NotMapped]
     [JsonIgnore]

@@ -49,11 +49,11 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
     }
 
     [HttpPost("login")]
-    public ActionResult<UserLogged> Login([FromQuery] UserLogin request)
+    public ActionResult<UserLogged> Login(UserLogin request)
     {
         try 
         {
-            var u = GetAccount(request.Email);
+            var u = GetUser(request.Email.ToEmail());
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password + Secret.Sel(), u.PasswordHashed))
             {
