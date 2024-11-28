@@ -21,6 +21,7 @@ public abstract class IdentifiableByID : PlatyAppComponent
     public abstract Task ServerUpdate();
     protected async Task _ServerUpdate<T>(T value) where T : IdentifiableByID
     {
+        Console.WriteLine("Uploading " + typeof(T).Name + " to the server");
         await App.DbPutAsync<T>(GetType().Name + "/" + ID.ToString(), value);
     }
     /// <summary>
@@ -29,6 +30,7 @@ public abstract class IdentifiableByID : PlatyAppComponent
     public abstract Task ServerDownload();
     protected async Task _ServerDownload<T>() where T : IdentifiableByID
     {
+        Console.WriteLine("Downloading " + typeof(T).Name + " from the server");
         var downloaded = await App.DbGetAsync<T>(GetType().Name + "/" + ID.ToString());
         ForceUpdateAllFrom(downloaded);
     }

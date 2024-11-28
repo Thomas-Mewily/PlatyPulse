@@ -48,10 +48,14 @@ public class Program : PlatyAppComponent
 
     private async Task SetXP()
     {
-        Console.WriteLine(CurrentUser + " have " + CurrentUser.XP);
+        Console.WriteLine(CurrentUser + " initaly have " + CurrentUser.XP);
         CurrentUser.XP += 10.XP();
+        Console.WriteLine(CurrentUser + " have locally " + CurrentUser.XP);
         await CurrentUser.ServerUpdate();
+
         CurrentUser.XP = 0.XP();
+        Console.WriteLine(CurrentUser + " have their xp locally reset" + CurrentUser.XP);
+
         await CurrentUser.ServerDownload();
         Console.WriteLine(CurrentUser + " have now " + CurrentUser.XP);
     }
