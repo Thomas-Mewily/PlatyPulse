@@ -78,6 +78,8 @@ public class User : IdentifiableByID
 
 
 
+    public override async Task ServerUpdate() => await _ServerUpdate<User>(this);
+    public override async Task ServerDownload() => await _ServerDownload<User>();
 
     // We don't need that for the moment
     // public DateTime Birthday { get; set; } = new DateTime(1000);

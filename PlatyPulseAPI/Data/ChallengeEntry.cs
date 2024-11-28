@@ -31,4 +31,7 @@ public class ChallengeEntry : IdentifiableByID
         UserID = user_id;
         Quest = quest_entries;
     }
+
+    public override async Task ServerUpdate() => await _ServerUpdate<ChallengeEntry>(this);
+    public override async Task ServerDownload() => await _ServerDownload<ChallengeEntry>();
 }

@@ -14,24 +14,22 @@ public abstract class IdentifiableByID : PlatyAppComponent
 
     public bool CanBeEditedBy(User u) => u.IsAdmin || _CanBeEditedBy(u);
     protected virtual bool _CanBeEditedBy(User u) => u.ID == OwnedByUserID;
-    [NotMapped]
-    [JsonIgnore]
-    public bool IsOnlyOwnedByAdmin => OwnedByUserID == ID.Empty;
-
 
     /// <summary>
     /// Upload the data to the server
     /// </summary>
-    public async Task ServerUpdate() 
+    public abstract Task ServerUpdate();
+    protected async Task _ServerUpdate<T>(T value) where T : IdentifiableByID
     {
-        await App.DbPutAsync(GetType().Name + "/" + ID.ToString(), this);
+        await App.DbPutAsync<T>(GetType().Name + "/" + ID.ToString(), value);
     }
     /// <summary>
     /// Download the data from the server
     /// </summary>
-    public async Task ServerDownload() 
+    public abstract Task ServerDownload();
+    protected async Task _ServerDownload<T>() where T : IdentifiableByID
     {
-        var downloaded = await App.DbGetAsync<IdentifiableByID>(GetType().Name + "/" + ID.ToString());
+        var downloaded = await App.DbGetAsync<T>(GetType().Name + "/" + ID.ToString());
         ForceUpdateAllFrom(downloaded);
     }
 

@@ -80,4 +80,7 @@ public class Quest : IdentifiableByID
         "todo".Panic();
         return 0.Meter();
     }
+
+    public override async Task ServerUpdate() => await _ServerUpdate<Quest>(this);
+    public override async Task ServerDownload() => await _ServerDownload<Quest>();
 }

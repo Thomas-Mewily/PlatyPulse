@@ -44,4 +44,7 @@ public class QuestEntry : IdentifiableByID
         Quest = quest;
         RankIdx = rankIdx;
     }
+
+    public override async Task ServerUpdate() => await _ServerUpdate<QuestEntry>(this);
+    public override async Task ServerDownload() => await _ServerDownload<QuestEntry>();
 }
