@@ -36,7 +36,7 @@ public class DataBaseCtx(DbContextOptions<DataBaseCtx> options) : DbContext(opti
         }
     }
 
-    private EntityTypeBuilder<T> AddTable<T>(ModelBuilder modelBuilder) where T : IdentifiableData
+    private EntityTypeBuilder<T> AddTable<T>(ModelBuilder modelBuilder) where T : IdentifiableByID
     {
         modelBuilder.Entity<T>().HasKey(s => s.ID);
         return modelBuilder.Entity<T>();

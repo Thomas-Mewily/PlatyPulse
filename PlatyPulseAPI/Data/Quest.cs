@@ -12,14 +12,14 @@ public enum QuestKind
 /// <summary>
 /// Description of a Quest
 /// </summary>
-public class Quest : IdentifiableOwnedByData
+public class Quest : IdentifiableByID
 {
     /// ================= Fields =========
     public QuestKind Kind { get; set; }
     public List<Rank> Rank { get; set; }
     public TimeSpan? MaxTime { get; set; }
 
-    public override void ForceUpdateFrom(IdentifiableData other)
+    public override void ForceUpdateFrom(IdentifiableByID other)
     {
         var q = (other as Quest).Unwrap();
         Kind = q.Kind;

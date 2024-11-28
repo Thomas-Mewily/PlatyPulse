@@ -9,6 +9,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace PlatyPulseAPI;
 
@@ -89,7 +92,11 @@ public partial class PlatyApp : PlatyAppComponent
 {
     private static string ServerApiURL = "https://localhost:7021/";
 
-    public new void LogOut() => LoggedUser.Disconnect();
+    public new void LogOut()
+    {
+        WebClient = new();
+        LoggedUser.Disconnect();
+    }
 
     private string GetUrl(string entry_point) => ServerApiURL + "api/" + entry_point;
 
@@ -98,14 +105,22 @@ public partial class PlatyApp : PlatyAppComponent
         var url = GetUrl(entry_point);
         var web_content = new StringContent(content, Encoding.UTF8, "application/json");
 
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+
         var response = await WebClient.PostAsync(url, web_content);
-        if (!response.IsSuccessStatusCode) { throw new Exception("Post error " + response.StatusCode + " : " + response.Content.ToString());  }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Get error " + response.StatusCode + " : " + await response.Content.ReadAsStringAsync());
+        }
+        //Console.WriteLine("Get : " + response.ToString());
         return response;
     }
-    public async Task<R> DbPost<C, R>(string url, C content)
+
+    public async Task<R> DbPostAsync<C, R>(string entry_point, C content)
     {
         string content_json = content.ToJson();
-        var web_result = _DbPostAsync(url, content_json);
+        var web_result = _DbPostAsync(entry_point, content_json);
         var reponse = (await web_result).Unwrap();
         string result_json = await reponse.Content.ReadAsStringAsync();
         //Console.WriteLine("Post : " + result_json);
@@ -115,17 +130,30 @@ public partial class PlatyApp : PlatyAppComponent
         return result;
     }
 
-    private async Task<HttpResponseMessage?> _DbGetAsync(string entry_point, JWTString token = "")
+
+
+    private async Task<HttpResponseMessage?> _DbGetAsync(string entry_point)
     {
-        var url = GetUrl(entry_point) + "?token=" + Uri.EscapeDataString(token);
-        var response = await WebClient.GetAsync(url);
-        if (!response.IsSuccessStatusCode) { throw new Exception("Get error " + response.StatusCode + " : " + response.Content.ToString()); }
-        Console.WriteLine("Get : " + response.ToString());
+        var url = GetUrl(entry_point);
+
+        // Create the HTTP request with Authorization header
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+        // Send the request
+        var response = await WebClient.SendAsync(request);
+
+        // Check for success
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Get error " + response.StatusCode + " : " + await response.Content.ReadAsStringAsync());
+        }
+
+        //Console.WriteLine("Get : " + response.ToString());
         return response;
     }
-    public async Task<R> DbGetAsync<R>(string url, JWTString? token = null)
+    public async Task<R> DbGetAsync<R>(string url)
     {
-        var web_result = _DbGetAsync(url, token ?? JWT);
+        var web_result = _DbGetAsync(url);
         var reponse = (await web_result).Unwrap();
         string result_json = await reponse.Content.ReadAsStringAsync();
         //Console.WriteLine("Get : " + result_json);
@@ -134,11 +162,45 @@ public partial class PlatyApp : PlatyAppComponent
         return result.Unwrap();
     }
 
-    public async Task<User> DbGetUserData(JWTString? token = null) => await DbGetAsync<User>("user_data", token);
+
+
+
+
+    private async Task<HttpResponseMessage?> _DbPutAsync(string entry_point, string content = "")
+    {
+        var url = GetUrl(entry_point);
+        var web_content = new StringContent(content, Encoding.UTF8, "application/json");
+
+        // Send the request
+        var response = await WebClient.PutAsync(url, web_content);
+
+        // Check for success
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Put error " + response.StatusCode + " : " + await response.Content.ReadAsStringAsync());
+        }
+        //Console.WriteLine("Put : " + response.ToString());
+        return response;
+    }
+
+    public async Task DbPutAsync<C>(string entry_point, C content)
+    {
+        
+        string content_json = content.ToJson();
+        var web_result = _DbPutAsync(entry_point, content_json);
+        var reponse = (await web_result).Unwrap();
+        //string result_json = await reponse.Content.ReadAsStringAsync();
+        //Console.WriteLine("Put : " + result_json);
+
+        //var result = Json.From<R>(result_json);
+        //Console.WriteLine("Put Result : " + result);
+        //return result;
+    }
 
     private void LoggedAs(UserLogged user) 
     { 
         LogOut();
+        WebClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.JWT);
         LoggedUser = user;
     }
 
@@ -148,7 +210,7 @@ public partial class PlatyApp : PlatyAppComponent
         try
         {
             login.Email.ToEmail().Check();
-            LoggedAs(await DbPost<UserLogin, UserLogged>("Auth/login", login));
+            LoggedAs(await DbPostAsync<UserLogin, UserLogged>("Auth/login", login));
             return true;
         }
         catch (Exception)
@@ -172,7 +234,7 @@ public partial class PlatyApp : PlatyAppComponent
         register.Pseudo.ToPseudo().Check();
         register.Password.CheckPasswordRobust();
 
-        var user_logged = await DbPost<UserRegister, UserLogged>("Auth/register", register);
+        var user_logged = await DbPostAsync<UserRegister, UserLogged>("Auth/register", register);
         LoggedAs(user_logged);
         return true;
     }

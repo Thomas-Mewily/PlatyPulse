@@ -3,24 +3,26 @@ using PlatyPulseAPI.Data;
 
 namespace PlatyPulseWebAPI.Controllers;
 
+// They need to have the same name than the classe. See the ServerUpload() method
+
 // Controller pour Quest
 [Route("api/[controller]")]
 [ApiController]
-public class QuestsController(DataBaseCtx db, IConfiguration config) : GenericController<Quest>(db, config)
+public class QuestController(DataBaseCtx db, IConfiguration config) : GenericController<Quest>(db, config)
 {
 }
 
 // Controller pour Challenge
 [Route("api/[controller]")]
 [ApiController]
-public class ChallengesController(DataBaseCtx db, IConfiguration config) : GenericController<Challenge>(db, config)
+public class ChallengeController(DataBaseCtx db, IConfiguration config) : GenericController<Challenge>(db, config)
 {
 }
 
 // Controller pour User
 [Route("api/[controller]")]
 [ApiController]
-public class UsersController(DataBaseCtx db, IConfiguration config) : GenericController<User>(db, config)
+public class UserController(DataBaseCtx db, IConfiguration config) : GenericController<User>(db, config)
 {
 }
 
@@ -37,13 +39,3 @@ public class ChallengeEntriesController(DataBaseCtx db, IConfiguration config) :
 public class QuestEntriesController(DataBaseCtx db, IConfiguration config) : GenericController<QuestEntry>(db, config)
 {
 }
-
-/*
-// Si Owned ou IdentifiableOwnedByData nécessitent des contrôleurs spécifiques
-[Route("api/[controller]")]
-[ApiController]
-public class OwnedsController : GenericController<Owned<IdentifiableOwnedByData>>
-{
-    public OwnedsController(DataBaseCtx db, IConfiguration config) : base(db, config) { }
-}
-*/

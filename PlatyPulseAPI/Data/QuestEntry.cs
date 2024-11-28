@@ -7,13 +7,13 @@ namespace PlatyPulseAPI.Data;
 /// <summary>
 /// A participation for a person in an objectif
 /// </summary>
-public class QuestEntry : IdentifiableOwnedByData
+public class QuestEntry : IdentifiableByID
 {
     /// ================= Fields =========
     public Score   Score   { get; set; }
     public Quest   Quest   { get; set; }
 
-    public override void ForceUpdateFrom(IdentifiableData other)
+    public override void ForceUpdateFrom(IdentifiableByID other)
     {
         var q   = (other as QuestEntry).Unwrap();
         Score   = q.Score;

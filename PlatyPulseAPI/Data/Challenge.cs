@@ -10,7 +10,7 @@ public enum ChallengePeriod
     Futur,
 }
 
-public class Challenge : IdentifiableOwnedByData
+public class Challenge : IdentifiableByID
 {
     /// ================= Fields =========
 
@@ -19,7 +19,7 @@ public class Challenge : IdentifiableOwnedByData
 
     public List<Quest> Quests { get; set; } = [];
 
-    public override void ForceUpdateFrom(IdentifiableData other)
+    public override void ForceUpdateFrom(IdentifiableByID other)
     {
         var c = (other as Challenge).Unwrap();
         Begin = c.Begin;

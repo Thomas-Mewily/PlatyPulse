@@ -6,12 +6,12 @@ namespace PlatyPulseAPI.Data;
 /// <summary>
 /// A participation for a person in a challenge
 /// </summary>
-public class ChallengeEntry : IdentifiableOwnedByData
+public class ChallengeEntry : IdentifiableByID
 {
     /// ================= Fields ========= <summary>
     public List<QuestEntry> Quest { get; set; } = [];
 
-    public override void ForceUpdateFrom(IdentifiableData other)
+    public override void ForceUpdateFrom(IdentifiableByID other)
     {
         var c = (other as ChallengeEntry).Unwrap();
         c.Quest = Quest;

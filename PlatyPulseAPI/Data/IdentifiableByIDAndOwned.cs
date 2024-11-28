@@ -3,36 +3,44 @@ using System.Text.Json.Serialization;
 
 namespace PlatyPulseAPI.Data;
 
-public abstract class IdentifiableData : PlatyAppComponent
+public abstract class IdentifiableByID : PlatyAppComponent
 {
     public ID ID { get; set; } = ID.NewGuid();
+    public ID OwnedByUserID { get; set; } = ID.Empty;
 
     //public UserID OwnedByUser {  get => UserID[; set; }
 
     public void GenerateNewID() { while (ID == ID.Empty) { ID = Guid.NewGuid(); } }
 
     public bool CanBeEditedBy(User u) => u.IsAdmin || _CanBeEditedBy(u);
-    protected virtual bool _CanBeEditedBy(User u) => false;
+    protected virtual bool _CanBeEditedBy(User u) => u.ID == OwnedByUserID;
+    [NotMapped]
+    [JsonIgnore]
+    public bool IsOnlyOwnedByAdmin => OwnedByUserID == ID.Empty;
+
 
     /// <summary>
     /// Upload the data to the server
     /// </summary>
     public async Task ServerUpdate() 
     {
-        
+        await App.DbPutAsync(GetType().Name + "/" + ID.ToString(), this);
     }
     /// <summary>
     /// Download the data from the server
     /// </summary>
     public async Task ServerDownload() 
-    { 
-        
+    {
+        var downloaded = await App.DbGetAsync<IdentifiableByID>(GetType().Name + "/" + ID.ToString());
+        ForceUpdateAllFrom(downloaded);
     }
 
     public override string ToString() => $"{GetType().Name}#{ID}";
 
-    public abstract void ForceUpdateFrom(IdentifiableData other);
-    public void UpdateFrom(IdentifiableData other, User askedBy) 
+    public virtual void ForceUpdateAllFrom(IdentifiableByID other) => ForceUpdateFrom(other);
+
+    public abstract void ForceUpdateFrom(IdentifiableByID other);
+    public void UpdateFrom(IdentifiableByID other, User askedBy) 
     { 
         if (!CanBeEditedBy(askedBy)) 
         {
@@ -48,15 +56,4 @@ public abstract class IdentifiableData : PlatyAppComponent
     [NotMapped]
     [JsonIgnore]
     public virtual bool IsPrivateData => false;
-}
-
-
-public abstract class IdentifiableOwnedByData : IdentifiableData
-{
-    public ID OwnedByUserID { get; set; } = ID.Empty;
-
-    [NotMapped] [JsonIgnore]
-    public bool IsOnlyOwnedByAdmin => OwnedByUserID == ID.Empty;
-
-    protected override bool _CanBeEditedBy(User u) => u.ID == OwnedByUserID;
 }

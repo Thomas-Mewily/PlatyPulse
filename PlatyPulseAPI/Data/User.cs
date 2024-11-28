@@ -14,7 +14,7 @@ public enum Role
 /// <summary>
 /// Represent a person, entity that can be logged
 /// </summary>
-public class User : IdentifiableData
+public class User : IdentifiableByID
 {
     /// ================= Fields =========
     public Pseudo Pseudo { get; set; } = new();
@@ -28,8 +28,17 @@ public class User : IdentifiableData
     public DateTime CreationDate { get; set; } = DateTime.Now;
     public XP XP { get; set; } = XP.Zero;
 
-
-    public override void ForceUpdateFrom(IdentifiableData other)
+    public override void ForceUpdateAllFrom(IdentifiableByID other)
+    {
+        var u = (other as User).Unwrap();
+        Pseudo = u.Pseudo;
+        Email = u.Email;
+        PasswordHashed = u.PasswordHashed;
+        Role = u.Role;
+        CreationDate = u.CreationDate;
+        XP = u.XP;
+    }
+    public override void ForceUpdateFrom(IdentifiableByID other)
     {
         var u = (other as User).Unwrap();
         Pseudo = u.Pseudo;

@@ -7,7 +7,7 @@ namespace PlatyPulseWebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class GenericController<T> : PlatyController where T : IdentifiableData
+public class GenericController<T> : PlatyController where T : IdentifiableByID
 {
     private DataBaseCtx _dbContext => Db;
     private readonly DbSet<T> _dbSet;

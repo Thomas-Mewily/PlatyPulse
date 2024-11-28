@@ -100,35 +100,6 @@ public class AuthController(DataBaseCtx db, IConfiguration config) : PlatyContro
         }
     }
 
-    [HttpGet("user_data")]
-    public ActionResult<User> GetUserData()
-    {
-        try
-        {
-            return Ok(CurrentUser.ToJson());
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    /*
-    protected JWTString CreateToken(User acc)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Email, acc.Email.Address)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret.TopSecretToken()));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(14), signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwt;
-    }*/
 
     protected JWTString CreateToken(User u)
     {

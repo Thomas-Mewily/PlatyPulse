@@ -48,7 +48,7 @@ public class Program : PlatyAppComponent
 
     private async Task SetXP()
     {
-
+        return;
         Console.WriteLine(CurrentUser + " have " + CurrentUser.XP);
         CurrentUser.XP += 10.XP();
         await CurrentUser.ServerUpdate();
