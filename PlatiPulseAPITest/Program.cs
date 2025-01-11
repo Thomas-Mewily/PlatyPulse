@@ -102,8 +102,8 @@ public class Program : PlatyAppComponent
     {
         //TestJson();
         //await TestWaitForSwagger();
-        await RecupererUtilisateur();
-        //await CreeQuest();
+        //await RecupererUtilisateur();
+        await CreeQuest();
     }
 
     private async Task RecupererUtilisateur()
@@ -124,15 +124,14 @@ public class Program : PlatyAppComponent
 
         await LogIn("admin@admin.fr".ToEmail(), "Admin1234!");
 
-
         var r = new List<Rank>()
         {
             new Rank(10.Meter(), 5.XP()),
             new Rank(50.KiloMeter(), 50.XP()),
         };
         var q = new Quest(QuestKind.Run, r, TimeSpan.FromDays(1.0));
-
         await q.ServerCreate();
+
         //await q.ServerUpdate();
     }
 }
