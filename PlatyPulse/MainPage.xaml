@@ -63,11 +63,13 @@
                 <!-- Carte d'identité -->
                 <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10,30,10,0">
                     <VerticalStackLayout>
-                        <Label Text="Nom: User" FontSize="18" FontAttributes="Bold"/>
-                        <Label Text="Âge: 22 ans" FontSize="18"/>
-                        <Label Text="Ville: Clermont-Ferrand" FontSize="18"/>
+                        <Label Text="{Binding ID}" FontSize="18" />
+                        <Label Text="{Binding Nom}" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="{Binding XP}" FontSize="18" />
                     </VerticalStackLayout>
                 </Frame>
+
+
 
                 <!-- CollectionView des objectifs quotidiens -->
                 <Label Text="Daily Goals:" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1" />

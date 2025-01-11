@@ -9,7 +9,6 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         PlatyApp.InitJsonSerializerOptions();
-
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
