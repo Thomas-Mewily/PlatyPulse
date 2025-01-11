@@ -101,6 +101,38 @@ public class Program : PlatyAppComponent
     public async Task Test() 
     {
         //TestJson();
-        await TestWaitForSwagger();
+        //await TestWaitForSwagger();
+        await RecupererUtilisateur();
+        //await CreeQuest();
+    }
+
+    private async Task RecupererUtilisateur()
+    {
+        LongWait();
+
+        var u = new User();
+        u.ID = Guid.Parse("f2b1cfed-b47c-49f3-b4ac-860a461dc97a");
+        Console.WriteLine(u);
+
+        await u.ServerDownload();
+        Console.WriteLine(u);
+    }
+
+    private async Task CreeQuest()
+    {
+        LongWait();
+
+        await LogIn("admin@admin.fr".ToEmail(), "Admin1234!");
+
+
+        var r = new List<Rank>()
+        {
+            new Rank(10.Meter(), 5.XP()),
+            new Rank(50.KiloMeter(), 50.XP()),
+        };
+        var q = new Quest(QuestKind.Run, r, TimeSpan.FromDays(1.0));
+
+        await q.ServerCreate();
+        //await q.ServerUpdate();
     }
 }

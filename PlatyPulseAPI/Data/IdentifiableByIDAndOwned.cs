@@ -16,6 +16,31 @@ public abstract class IdentifiableByID : PlatyAppComponent
     protected virtual bool _CanBeEditedBy(User u) => u.ID == OwnedByUserID;
 
     /// <summary>
+    /// Create a new object and send it to the server
+    /// </summary>
+    public abstract Task ServerCreate();
+    protected async Task _ServerCreate<T>(T value) where T : IdentifiableByID
+    {
+        Console.WriteLine("Creating " + typeof(T).Name + " to the server");
+        await App.DbPostAsync<T, T>(GetType().Name + "/", value);
+
+        /*
+        try
+        {
+            // ActionResult<T>
+            // Idk what the second generic type is so I'm just going to use int and try catch x)
+            
+            // I don't want to install it
+            //await App.DbPostAsync<T, ActionResult<T>>(GetType().Name + "/" + ID.ToString(), value);
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }*/
+    }
+
+    /// <summary>
     /// Upload the data to the server
     /// </summary>
     public abstract Task ServerUpdate();
