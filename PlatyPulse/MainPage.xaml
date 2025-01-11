@@ -60,13 +60,6 @@
                 <Label Text="Hello User!" Style="{StaticResource Headline}" SemanticProperties.HeadingLevel="Level1"/>
                 <Label Text="Welcome to PlatyPulse" Style="{StaticResource SubHeadline}" SemanticProperties.HeadingLevel="Level2"/>
 
-                <!-- Météo -->
-                <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10,30,10,0">
-                    <VerticalStackLayout>
-                        <Label Text="METEO API" FontSize="18" FontAttributes="Bold"/>
-                    </VerticalStackLayout>
-                </Frame>
-
                 <!-- Carte d'identité -->
                 <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10,30,10,0">
                     <VerticalStackLayout>
