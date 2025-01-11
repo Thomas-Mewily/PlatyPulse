@@ -40,6 +40,22 @@ public class GenericController<T> : PlatyController where T : IdentifiableByID
         return Ok(item);
     }
 
+    /*
+    /// <summary>
+    /// Ajoute un nouvel élément
+    /// </summary>
+    [Authorize]
+    [HttpPost("{value}")]
+    public async Task<ActionResult<T>> CreateValue([FromBody] T value)
+    {
+        if (value == null) { return BadRequest("Item cannot be null"); }
+
+        _dbSet.Add(value);
+        await _dbContext.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = GetItemId(value) }, value);
+    }
+    */
+
     /// <summary>
     /// Ajoute un nouvel élément
     /// </summary>
@@ -54,6 +70,9 @@ public class GenericController<T> : PlatyController where T : IdentifiableByID
 
         return CreatedAtAction(nameof(GetById), new { id = GetItemId(item) }, item);
     }
+
+
+
 
     /// <summary>
     /// Supprime un élément par son ID

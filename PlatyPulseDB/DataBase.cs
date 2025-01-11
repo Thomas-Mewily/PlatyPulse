@@ -68,7 +68,10 @@ public class DataBaseCtx(DbContextOptions<DataBaseCtx> options) : DbContext(opti
         AddTable<Challenge>(modelBuilder);
         AddTable<ChallengeEntry>(modelBuilder);
 
-        AddTable<Quest>(modelBuilder).OwnsMany(q => q.Rank, rank => rank.WithOwner()); // WithOne(r => r.Qu) .OwnsOne(q => q.Rank);
+        AddTable<Quest>(modelBuilder).OwnsMany(q => q.Rank, rank => 
+        { 
+            rank.WithOwner();
+        });
         AddTable<QuestEntry>(modelBuilder);
 
         // Value like
@@ -77,6 +80,7 @@ public class DataBaseCtx(DbContextOptions<DataBaseCtx> options) : DbContext(opti
         modelBuilder.Owned<Score>();
         modelBuilder.Owned<XP>();
         modelBuilder.Owned<List<Rank>>();
+        modelBuilder.Owned<Rank>();
     }
 
     public void PrintSchema() 

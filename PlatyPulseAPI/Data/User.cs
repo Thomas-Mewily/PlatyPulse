@@ -37,6 +37,7 @@ public class User : IdentifiableByID
         Role = u.Role;
         CreationDate = u.CreationDate;
         XP = u.XP;
+        //Role = u.Role;
     }
     public override void ForceUpdateFrom(IdentifiableByID other)
     {
@@ -46,6 +47,9 @@ public class User : IdentifiableByID
 
         // To test, todo : delete it
         XP = u.XP;
+
+        // To test, todo : delete it Pour se mettre en admin depuis le web
+        //Role = u.Role;
     }
 
     /// ================= Rest =========
@@ -77,7 +81,7 @@ public class User : IdentifiableByID
     public static User TestDefaultAdmin => new(Role.Admin);
 
 
-
+    public override async Task ServerCreate() => await _ServerCreate<User>(this);
     public override async Task ServerUpdate() => await _ServerUpdate<User>(this);
     public override async Task ServerDownload() => await _ServerDownload<User>();
 

@@ -81,6 +81,7 @@ public class Quest : IdentifiableByID
         return 0.Meter();
     }
 
+    public override async Task ServerCreate() => await _ServerCreate<Quest>(this);
     public override async Task ServerUpdate() => await _ServerUpdate<Quest>(this);
     public override async Task ServerDownload() => await _ServerDownload<Quest>();
 }

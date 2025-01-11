@@ -1,0 +1,7 @@
+Le client se connecte au serveur de la Base de donnée (actuellement en local).
+
+Le client peut se crée un compte (register), ou se connecter dans le système (login).
+Le serveur lui renvoie un json web token (JWT) (encrypté par un mot de passe) qui encode la session de l'utilisateur si ses login sont valide.
+Ce token JWT assure qui l'utilisateur est, si il est admin, quand le token expire...
+Le client conserve ce token. Il peut faire d'autre requêtes sur d'autres points d'entrées (Get, Put, Post...), comme pour mettre à jour son profil, lire le profil d'un autre utilisateur...
+Le serveur gère les permissions via le token JWT du client. Par exemple un client ne peut modifier que son propre profil, pas celui des autres utilisateurs.

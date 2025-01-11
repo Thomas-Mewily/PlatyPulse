@@ -73,6 +73,7 @@ public class Challenge : IdentifiableByID
         return time_str + " " + duration_str + " challenge consist of " + string.Join(" and ", Quests.Select(x => x.ToString()));
     }
 
+    public override async Task ServerCreate() => await _ServerCreate<Challenge>(this);
     public override async Task ServerUpdate() => await _ServerUpdate<Challenge>(this);
     public override async Task ServerDownload() => await _ServerDownload<Challenge>();
 }
