@@ -63,11 +63,12 @@
                 <!-- Carte d'identité -->
                 <Frame BorderColor="Gray" CornerRadius="10" Padding="10" Margin="10,30,10,0">
                     <VerticalStackLayout>
-                        <Label Text="{Binding ID}" FontSize="18" />
-                        <Label Text="{Binding Nom}" FontSize="18" FontAttributes="Bold" />
-                        <Label Text="{Binding XP}" FontSize="18" />
+                        <Label Text="{Binding ID, StringFormat='ID: {0}'}" FontSize="18" />
+                        <Label Text="{Binding Nom, StringFormat='Username: {0}'}" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="{Binding XP, StringFormat='XP: {0}'}" FontSize="18" />
                     </VerticalStackLayout>
                 </Frame>
+
 
 
 
